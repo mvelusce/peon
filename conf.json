@@ -1,0 +1,29 @@
+{
+  "modules": [
+    {
+      "name": "module_a",
+      "path": "asd",
+      "deps": []
+    },
+    {
+      "name": "module_b",
+      "path": "qwe",
+      "deps": ["module_a"]
+    },
+    {
+      "name": "module_c",
+      "path": "qwe",
+      "deps": ["module_a"]
+    },
+    {
+      "name": "module_d",
+      "path": "qwe",
+      "deps": ["module_b", "module_c"]
+    },
+    {
+      "name": "module_e",
+      "path": "qwe",
+      "deps": ["module_b", "module_d"]
+    }
+  ]
+}
