@@ -6,6 +6,7 @@ import (
 
 func TestWrapper(t *testing.T) {
 
+	readConfigs()
 	if 1 != 2 {
 		t.Error("asd")
 	}

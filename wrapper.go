@@ -17,10 +17,10 @@ type Modules struct {
 }
 
 type Configuration struct {
-	Modules    []Modules
+	Modules []Modules
 }
 
-func readConfigs()  {
+func readConfigs() {
 	file, _ := os.Open("conf.json")
 	defer file.Close()
 	decoder := json.NewDecoder(file)
@@ -61,9 +61,4 @@ func readConfigs()  {
 		fmt.Println(v)
 		fmt.Println("Install: ", configuration.Modules[v].Name)
 	}
-}
-
-func main() {
-
-	readConfigs()
 }
