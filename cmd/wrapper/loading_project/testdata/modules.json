@@ -1,0 +1,24 @@
+{
+  "modules": [
+    {
+      "module": "module_a",
+      "path": "asd"
+    },
+    {
+      "module": "module_b",
+      "path": "qwe"
+    },
+    {
+      "module": "module_c",
+      "path": "qwe"
+    },
+    {
+      "module": "module_d",
+      "path": "qwe"
+    },
+    {
+      "module": "module_e",
+      "path": "qwe"
+    }
+  ]
+}
