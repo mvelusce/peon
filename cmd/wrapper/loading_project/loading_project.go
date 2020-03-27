@@ -1,10 +1,29 @@
 package loading_project
 
-import "fmt"
+import (
+	"github.com/yourbasic/graph"
+	"log"
+)
 
-func loadProject() {
+func loadProject() ([]PyModule, *graph.Mutable) {
 
 	modules := LoadModules("testdata")
 
-	fmt.Println(modules)
+	g := graph.New(len(modules))
+	indexes := make(map[string]int)
+	for i, m := range modules {
+		indexes[m.Name] = i
+	}
+
+	for i, m := range modules {
+		for _, d := range m.Dependencies {
+			g.Add(i, indexes[d])
+		}
+	}
+
+	if !graph.Acyclic(g) {
+		log.Fatalf("ERROR Cyrcular dependency detected")
+	}
+
+	return modules, g
 }
