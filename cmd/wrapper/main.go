@@ -1,6 +1,9 @@
-package main
+package wrapper
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/skyveluscekm/setuptools.wrapper/cmd/wrapper/loading_project"
+)
 
 func main() {
 
@@ -20,6 +23,6 @@ func main() {
 	// run tests: run python -m unittest with all files test_*.py
 	// run module: python bin/run_module_name.py
 
-	var modules = GetModules()
-	fmt.Println(modules[1].Module)
+	var modules = loading_project.LoadModules("")
+	fmt.Println(modules[1].Name)
 }

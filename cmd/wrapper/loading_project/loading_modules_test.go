@@ -1,35 +1,64 @@
 package loading_project
 
 import (
+	"reflect"
 	"testing"
 )
 
+func TestLoadModules(t *testing.T) {
+
+	res := LoadModules("testdata")
+
+	if len(res) != 2 {
+		t.Errorf("expected 2, got %d", len(res))
+	}
+
+	modA := res[0]
+	expectedA := PyModule{
+		Name: "module_a",
+		Path: "testdata/module_a",
+	}
+	if !reflect.DeepEqual(modA, expectedA) {
+		t.Errorf("expected %v, got %v", expectedA, modA)
+	}
+
+	modB := res[1]
+	expectedB := PyModule{
+		Name:         "module_b",
+		Path:         "testdata/module_b",
+		Dependencies: []string{"module_a"},
+	}
+	if !reflect.DeepEqual(modB, expectedB) {
+		t.Errorf("expected %v, got %v", expectedB, modB)
+	}
+}
+
 func TestLoadingModulesYaml(t *testing.T) {
-	path := "testdata/modules.yml"
+	path := "testdata"
 	res := loadYamlModules(path)
 
 	if len(res) != 2 {
 		t.Errorf("In %s expected 2 projects, got %d", path, len(res))
 	}
-	if res[0].Module != "module_a" {
-		t.Errorf("expected module_a, got %s", res[0].Module)
+	if res[0].Name != "module_a" {
+		t.Errorf("expected module_a, got %s", res[0].Name)
 	}
-	if res[1].Module != "module_b" {
-		t.Errorf("expected module_b, got %s", res[1].Module)
+	if res[1].Name != "module_b" {
+		t.Errorf("expected module_b, got %s", res[1].Name)
 	}
 }
 
 func TestLoadingModulesJson(t *testing.T) {
-	path := "testdata/modules.json"
+	path := "testdata"
 	res := loadJsonModules(path)
 
 	if len(res) != 5 {
 		t.Errorf("In %s expected 2 projects, got %d", path, len(res))
 	}
-	if res[0].Module != "module_a" {
-		t.Errorf("expected module_a, got %s", res[0].Module)
+	if res[0].Name != "module_a" {
+		t.Errorf("expected module_a, got %s", res[0].Name)
 	}
-	if res[1].Module != "module_b" {
-		t.Errorf("expected module_b, got %s", res[1].Module)
+	if res[1].Name != "module_b" {
+		t.Errorf("expected module_b, got %s", res[1].Name)
 	}
 }

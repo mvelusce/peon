@@ -1,6 +1,7 @@
 package loading_project
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -8,43 +9,64 @@ import (
 	"strings"
 )
 
-type setupPyModule struct {
-	name         string
-	dependencies []string
-}
-
 const setupPy = "setup.py"
 
-func parseSetupPyFile(path string, modules []Modules) (setupPyModule, error) {
+func parseSetupPyFiles(modules []PyModule) []PyModule {
 
-	file, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", path, setupPy))
+	var modulesWithDeps []PyModule
+	for _, m := range modules {
+		pyMod, err := parseSetupPyFile(m.Path, modules)
+		if err == nil {
+			modulesWithDeps = append(modulesWithDeps, pyMod)
+		} else {
+			modulesWithDeps = append(modulesWithDeps, m)
+		}
+	}
+	return modulesWithDeps
+}
+
+func parseSetupPyFile(path string, modules []PyModule) (PyModule, error) {
+
+	p := TrimSuffix(path, "/")
+	file, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", p, setupPy))
 	if err != nil {
-		log.Fatalf("Failed to read setup.py file in %s. Error: %v", path, err)
+		log.Fatalf("Failed to read setup.py file in %s. Error: %v", p, err)
 	}
 	content := string(file)
 
-	module := setupPyModule{}
+	name := parseName(content)
 
-	parseName(content, &module)
+	deps := parseDependencies(modules, content, name)
 
-	parseDependencies(modules, content, &module)
-
-	return module, nil
-}
-
-func parseDependencies(modules []Modules, content string, module *setupPyModule) {
 	for _, m := range modules {
-
-		if strings.Contains(content, m.Module) {
-			module.dependencies = append(module.dependencies, m.Module)
+		if m.Name == name {
+			m.Dependencies = deps
+			return m, nil
 		}
 	}
+	return PyModule{}, errors.New("Py module not found in " + p)
 }
 
-func parseName(content string, module *setupPyModule) {
+func parseDependencies(modules []PyModule, content string, nameToExclude string) []string {
+
+	c := strings.Replace(content, "\n", "", -1)
+	c = strings.Replace(c, nameToExclude, "", -1)
+
+	var deps []string
+	for _, m := range modules {
+		r := regexp.MustCompile(`install_requires=\[.+` + m.Name + `.+\]`)
+		if r.MatchString(c) {
+			deps = append(deps, m.Name)
+		}
+	}
+	return deps
+}
+
+func parseName(content string) string {
 	r := regexp.MustCompile(`name='(.+)'`)
 	nameRes := r.FindStringSubmatch(content)
 	if len(nameRes) == 2 {
-		module.name = nameRes[1]
+		return nameRes[1]
 	}
+	return ""
 }

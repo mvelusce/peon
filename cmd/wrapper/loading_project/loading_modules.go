@@ -2,44 +2,44 @@ package loading_project
 
 import (
 	"encoding/json"
+	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 	"os"
 )
 
-type Modules struct {
-	Module          string `json:"module" yaml:"module"`
-	Path            string `json:"path" yaml:"path"`
-	ModuleDeps      []string
-	ModuleLocalDeps []string
+type PyModule struct {
+	Name         string `json:"module" yaml:"module"`
+	Path         string `json:"path" yaml:"path"`
+	Dependencies []string
 }
 
 type modulesRoot struct {
-	Modules []Modules
+	Modules []PyModule
 }
 
 const modulesYaml = "modules.yml"
 const modulesJson = "modules.json"
 
-func LoadModules() ([]Modules, error) {
+func LoadModules(root string) []PyModule {
 
-	if _, err := os.Stat(modulesYaml); err == nil {
-		return loadYamlModules(modulesYaml), nil
-	} else {
+	var modules []PyModule
 
-		if _, err := os.Stat(modulesJson); err == nil {
-			return loadJsonModules(modulesJson), nil
-		} else {
-			log.Fatalf("Failed to load modules. Error: %v", err)
-			return nil, err
-		}
+	modules = loadYamlModules(root)
+
+	if len(modules) == 0 {
+		modules = loadJsonModules(root)
 	}
+
+	return parseSetupPyFiles(modules)
 }
 
-func loadYamlModules(path string) []Modules { // TODO return error
-	var c []Modules
-	modules, err := ioutil.ReadFile(path)
+func loadYamlModules(root string) []PyModule {
+
+	r := TrimSuffix(root, "/")
+	var c []PyModule
+	modules, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", r, modulesYaml))
 	if err != nil {
 		log.Fatalf("Failed to read yaml modules. Error: %v", err)
 	}
@@ -47,11 +47,13 @@ func loadYamlModules(path string) []Modules { // TODO return error
 	if err != nil {
 		log.Fatalf("Failed to unmarshal yaml modules. Erroro: %v", err)
 	}
-	return c
+	return appendRoot(r, c)
 }
 
-func loadJsonModules(path string) []Modules { // TODO return error
-	file, err := os.Open(path)
+func loadJsonModules(root string) []PyModule {
+
+	r := TrimSuffix(root, "/")
+	file, err := os.Open(fmt.Sprintf("%s/%s", r, modulesJson))
 	if err != nil {
 		log.Fatalf("Failed to read json modules. Error: %v ", err)
 	}
@@ -61,5 +63,18 @@ func loadJsonModules(path string) []Modules { // TODO return error
 	if err != nil {
 		log.Fatalf("Failed to decode json modules. Error: %v", err)
 	}
-	return rootModules.Modules
+	return appendRoot(r, rootModules.Modules)
+}
+
+func appendRoot(root string, modules []PyModule) []PyModule {
+	r := TrimSuffix(root, "/")
+
+	var mods []PyModule
+	for _, m := range modules {
+		path := TrimPrefix(TrimPrefix(m.Path, "."), "/")
+		p := fmt.Sprintf("%s/%s", r, path)
+		m.Path = p
+		mods = append(mods, m)
+	}
+	return mods
 }
