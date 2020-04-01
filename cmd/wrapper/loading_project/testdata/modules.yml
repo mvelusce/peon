@@ -2,3 +2,7 @@
   path: ./module_a
 - module: module_b
   path: ./module_b
+- module: module_c
+  path: ./module_c
+- module: module_d
+  path: ./module_d

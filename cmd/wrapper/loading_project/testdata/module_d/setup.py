@@ -2,9 +2,9 @@
 
 import setuptools
 
-setuptools.setup(name='module_a',
+setuptools.setup(name='module_d',
                  version='1.2.3',
-                 description='Module a',
+                 description='module D',
                  url='some-repo',
                  author='sky',
                  zip_safe=False,
@@ -18,7 +18,9 @@ setuptools.setup(name='module_a',
                      'psycopg2-binary==2.8.2',
                      'google-auth==1.6.3',
                      'google-cloud-storage==1.17.0',
-                     'google-cloud-pubsub==0.44.0'
+                     'google-cloud-pubsub==0.44.0',
+                     'module_c',
+                     'module_a'
                  ],
-                 test_suite='module_a.tests',
-                 scripts=['bin/run_module_a.py'])
+                 test_suite='module_d.tests',
+                 scripts=['bin/run_module_d.py'])
