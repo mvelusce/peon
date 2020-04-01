@@ -2,6 +2,7 @@ package project
 
 import (
 	"fmt"
+	"github.com/skyveluscekm/setuptools.wrapper/cmd/wrapper/executor"
 	"github.com/yourbasic/graph"
 	"log"
 )
@@ -9,29 +10,33 @@ import (
 type PyProject struct {
 	modules      []PyModule
 	dependencies *graph.Mutable
+	executor     executor.PyExecutor
 }
 
 func LoadProject() PyProject {
 
-	modules := loadModules("testdata")
+	modules, g := loadModulesAndGraph()
 
+	e := &executor.SetupPyExecutor{}
+	return PyProject{modules, g, e}
+}
+
+func loadModulesAndGraph() ([]PyModule, *graph.Mutable) {
+	modules := loadModules("testdata") // TODO make it a parameter
 	g := graph.New(len(modules))
 	indexes := make(map[string]int)
 	for i, m := range modules {
 		indexes[m.Name] = i
 	}
-
 	for i, m := range modules {
 		for _, d := range m.Dependencies {
 			g.Add(i, indexes[d])
 		}
 	}
-
 	if !graph.Acyclic(g) {
 		log.Fatalf("ERROR Cyrcular dependency detected")
 	}
-
-	return PyProject{modules, g}
+	return modules, g
 }
 
 func (p *PyProject) Build() {
@@ -59,6 +64,7 @@ func (p *PyProject) BuildModule(module string) {
 
 	b := func(w int, c int64) bool {
 		m := p.modules[w]
+		p.executor.Build(m.Path)
 		fmt.Println(fmt.Sprintf("python %s/setup.py install", m.Path))
 		return false
 	}
