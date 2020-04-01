@@ -7,10 +7,10 @@ import (
 
 func TestLoadModules(t *testing.T) {
 
-	res := LoadModules("testdata")
+	res := loadModules("testdata")
 
-	if len(res) != 2 {
-		t.Errorf("expected 2, got %d", len(res))
+	if len(res) != 4 {
+		t.Errorf("expected 4, got %d", len(res))
 	}
 
 	modA := res[0]
@@ -37,8 +37,8 @@ func TestLoadingModulesYaml(t *testing.T) {
 	path := "testdata"
 	res := loadYamlModules(path)
 
-	if len(res) != 2 {
-		t.Errorf("In %s expected 2 projects, got %d", path, len(res))
+	if len(res) != 4 {
+		t.Errorf("In %s expected 4 projects, got %d", path, len(res))
 	}
 	if res[0].Name != "module_a" {
 		t.Errorf("expected module_a, got %s", res[0].Name)

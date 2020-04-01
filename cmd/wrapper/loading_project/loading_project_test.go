@@ -1,16 +1,19 @@
 package loading_project
 
 import (
-	"fmt"
 	"testing"
 )
 
 func TestLoadingProject(t *testing.T) {
 
-	modules, g := loadProject()
+	project := LoadProject()
 
-	for v := 0; v < g.Order(); v++ {
+	/*for v := 0; v < project.dependencies.Order(); v++ {
 		fmt.Println(v)
-		fmt.Println("Install: ", modules[v].Name)
-	}
+		fmt.Println("Install: ", project.modules[v].Name)
+	}*/
+
+	//project.Build()
+
+	project.BuildModule("module_d")
 }

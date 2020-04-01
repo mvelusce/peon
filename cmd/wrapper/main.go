@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/skyveluscekm/setuptools.wrapper/cmd/wrapper/loading_project"
 	"log"
 	"os"
 	"os/exec"
@@ -10,6 +11,29 @@ import (
 )
 
 func main() {
+
+	project := loading_project.LoadProject()
+
+	project.Build()
+
+	app := cli.NewApp()
+	app.Name = "gip"
+	app.Version = "0.0.0"
+	app.Usage = "Manage your setup.py ptojects"
+	app.Flags = []cli.Flag{
+		&cli.StringFlag{Name: "file", Aliases: []string{"f"}, Usage: ""},
+		&cli.BoolFlag{Name: "debug", Aliases: []string{"d"}, Usage: ""},
+		&cli.BoolFlag{Name: "quiet", Aliases: []string{"q"}, Usage: ""},
+		&cli.BoolFlag{Name: "ignore-missing", Aliases: []string{"m"}, Usage: ""},
+	}
+	app.EnableBashCompletion = true
+
+	app.Commands = commands
+
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// read modules root
 	// read single modules dependencies and add it to list of modules <-- READ SETUP.PY
@@ -37,16 +61,4 @@ func main() {
 	}
 
 	fmt.Print(string(stdout))
-
-	app := &cli.App{
-		Action: func(c *cli.Context) error {
-			fmt.Printf("Hello %q", c.Args().Get(0))
-			return nil
-		},
-	}
-
-	err = app.Run(os.Args)
-	if err != nil {
-		log.Fatal(err)
-	}
 }

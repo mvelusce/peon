@@ -22,7 +22,7 @@ type modulesRoot struct {
 const modulesYaml = "modules.yml"
 const modulesJson = "modules.json"
 
-func LoadModules(root string) []PyModule {
+func loadModules(root string) []PyModule {
 
 	var modules []PyModule
 

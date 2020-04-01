@@ -1,6 +1,10 @@
 package loading_project
 
-import "strings"
+import (
+	"fmt"
+	"os/exec"
+	"strings"
+)
 
 func TrimSuffix(s string, suffix string) string {
 	if strings.HasSuffix(s, suffix) {
@@ -14,4 +18,18 @@ func TrimPrefix(s string, prefix string) string {
 		s = s[0+len(prefix):]
 	}
 	return s
+}
+
+func runCommand(command string) error {
+	cmd := exec.Command(command)
+
+	stdout, err := cmd.Output()
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+
+	fmt.Print(string(stdout))
+	return nil
 }
