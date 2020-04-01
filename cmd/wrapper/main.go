@@ -1,8 +1,12 @@
-package wrapper
+package main
 
 import (
 	"fmt"
-	"github.com/skyveluscekm/setuptools.wrapper/cmd/wrapper/loading_project"
+	"log"
+	"os"
+	"os/exec"
+
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
@@ -23,6 +27,26 @@ func main() {
 	// run tests: run python -m unittest with all files test_*.py
 	// run module: python bin/run_module_name.py
 
-	var modules = loading_project.LoadModules("")
-	fmt.Println(modules[1].Name)
+	cmd := exec.Command("ls")
+	cmd.Dir = "cmd/wrapper/loading_project/testdata"
+	stdout, err := cmd.Output()
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	fmt.Print(string(stdout))
+
+	app := &cli.App{
+		Action: func(c *cli.Context) error {
+			fmt.Printf("Hello %q", c.Args().Get(0))
+			return nil
+		},
+	}
+
+	err = app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
