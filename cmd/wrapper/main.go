@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/skyveluscekm/setuptools.wrapper/cmd/wrapper/loading_project"
+	"github.com/skyveluscekm/setuptools.wrapper/cmd/wrapper/project"
 	"log"
 	"os"
 	"os/exec"
@@ -12,9 +12,9 @@ import (
 
 func main() {
 
-	project := loading_project.LoadProject()
+	p := project.LoadProject()
 
-	project.Build()
+	p.Build()
 
 	app := cli.NewApp()
 	app.Name = "gip"

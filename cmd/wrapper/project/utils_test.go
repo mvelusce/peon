@@ -1,4 +1,4 @@
-package loading_project
+package project
 
 import "testing"
 
