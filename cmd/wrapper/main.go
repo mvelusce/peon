@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/skyveluscekm/setuptools.wrapper/cmd/wrapper/executor"
 	"github.com/skyveluscekm/setuptools.wrapper/cmd/wrapper/project"
 	"log"
 	"os"
@@ -11,6 +12,11 @@ import (
 )
 
 func main() {
+
+	e := &executor.SetupPyExecutor{PyVersion: "python3.7"}
+
+	asd := e.Build("testdata/module_a")
+	fmt.Println(asd)
 
 	p := project.LoadProject()
 
@@ -28,7 +34,7 @@ func main() {
 	}
 	app.EnableBashCompletion = true
 
-	app.Commands = commands
+	//app.Commands = commands
 
 	err := app.Run(os.Args)
 	if err != nil {

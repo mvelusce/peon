@@ -15,14 +15,16 @@ type PyProject struct {
 
 func LoadProject() PyProject {
 
-	modules, g := loadModulesAndGraph()
+	projectRoot := "testdata"
+	pythonVersion := "python3.7"
+	modules, g := loadModulesAndGraph(projectRoot)
 
-	e := &executor.SetupPyExecutor{}
+	e := &executor.SetupPyExecutor{PyVersion: pythonVersion}
 	return PyProject{modules, g, e}
 }
 
-func loadModulesAndGraph() ([]PyModule, *graph.Mutable) {
-	modules := loadModules("testdata") // TODO make it a parameter
+func loadModulesAndGraph(projectRoot string) ([]PyModule, *graph.Mutable) {
+	modules := loadModules(projectRoot)
 	g := graph.New(len(modules))
 	indexes := make(map[string]int)
 	for i, m := range modules {
@@ -64,9 +66,9 @@ func (p *PyProject) BuildModule(module string) {
 
 	b := func(w int, c int64) bool {
 		m := p.modules[w]
-		p.executor.Build(m.Path)
+		err := p.executor.Build(m.Path)
 		fmt.Println(fmt.Sprintf("python %s/setup.py install", m.Path))
-		return false
+		return err != nil
 	}
 
 	res := p.dependencies.Visit(index, b)
