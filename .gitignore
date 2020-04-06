@@ -11,6 +11,20 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+# IntelliJ
 .idea
 *.iml
 *.idea
+
+# python stuff
+venv
+__pycache__/
+.eggs/
+*.egg-info/
+_dev_support/
+*build/
+*dist/
+.coverage
+Pipfile
+Pipfile.lock
+*.pyc
