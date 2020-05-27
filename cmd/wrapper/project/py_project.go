@@ -25,6 +25,11 @@ func LoadProject() PyProject {
 
 func loadModulesAndGraph(projectRoot string) ([]PyModule, *graph.Mutable) {
 	modules := loadModules(projectRoot)
+	g := loadDependenciesGraph(modules)
+	return modules, g
+}
+
+func loadDependenciesGraph(modules []PyModule) *graph.Mutable {
 	g := graph.New(len(modules))
 	indexes := make(map[string]int)
 	for i, m := range modules {
@@ -38,19 +43,18 @@ func loadModulesAndGraph(projectRoot string) ([]PyModule, *graph.Mutable) {
 	if !graph.Acyclic(g) {
 		log.Fatalf("ERROR Cyrcular dependency detected")
 	}
-	return modules, g
+	return g
 }
 
 func (p *PyProject) Build() {
 
 	for v := 0; v < p.dependencies.Order(); v++ {
 		m := p.modules[v]
-		fmt.Println(fmt.Sprintf("python %s/setup.py install", m.Path))
-		/*err := runCommand(fmt.Sprintf("python %s/setup.py install", m.Path))// TODO pass cmd as dependency
+		err := p.executor.Build(m.Path)
 		if err != nil {
-			fmt.Println("Unable to build module {}", err)
+			fmt.Println("Unable to build module {}. Error: {}", m.Path, err)
 		}
-		fmt.Println("Install: ", p.modules[v].Name)*/
+		fmt.Println("Install module {} successful", p.modules[v].Name)
 	}
 }
 
@@ -67,7 +71,10 @@ func (p *PyProject) BuildModule(module string) {
 	b := func(w int, c int64) bool {
 		m := p.modules[w]
 		err := p.executor.Build(m.Path)
-		fmt.Println(fmt.Sprintf("python %s/setup.py install", m.Path))
+		if err != nil {
+			fmt.Println("Unable to build module {}. Error: {}", m.Path, err)
+		}
+		fmt.Println("Install module {} successful", m.Name)
 		return err != nil
 	}
 
@@ -75,6 +82,10 @@ func (p *PyProject) BuildModule(module string) {
 
 	if !res {
 		m := p.modules[index]
-		fmt.Println(fmt.Sprintf("python %s/setup.py install", m.Path))
+		err := p.executor.Build(m.Path)
+		if err != nil {
+			fmt.Println("Unable to build module {}. Error: {}", m.Path, err)
+		}
+		fmt.Println("Install module {} successful", m.Name)
 	}
 }
