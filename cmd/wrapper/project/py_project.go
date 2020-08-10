@@ -1,7 +1,6 @@
 package project
 
 import (
-	"fmt"
 	"github.com/skyveluscekm/setuptools.wrapper/cmd/wrapper/executor"
 	"github.com/yourbasic/graph"
 	"log"
@@ -70,39 +69,47 @@ func (p *PyProject) BuildModule(module string) {
 
 	index := p.findIndex(module)
 
-	depsError := p.buildDependencies(index)
+	visited := p.setupVisited()
 
-	p.buildModule(depsError, index)
+	p.buildDependencies(index, visited)
 }
 
-func (p *PyProject) buildDependencies(index int) bool {
-
-	// TODO use depth first search to build modules with no deps first
-
-	b := func(w int, c int64) bool {
-		println("QWEQWE ", w)
-		m := p.modules[w]
-
-		err := p.executor.Build(m.Path)
-		if err != nil {
-			fmt.Println("Unable to build module {}. Error: {}", m.Path, err)
-		}
-		fmt.Println("Install module {} successful", m.Name)
-		return err != nil
+func (p *PyProject) setupVisited() []bool {
+	visited := make([]bool, p.dependencies.Order())
+	for v := 0; v < p.dependencies.Order(); v++ {
+		visited[v] = false
 	}
-	depsError := p.dependencies.Visit(index, b)
-	return depsError
+	return visited
 }
 
-func (p *PyProject) buildModule(depsError bool, index int) {
-	if !depsError {
-		m := p.modules[index]
-		err := p.executor.Build(m.Path)
-		if err != nil {
-			fmt.Println("Unable to build module {}. Error: {}", m.Path, err)
+func (p *PyProject) buildDependencies(index int, visited []bool) {
+
+	b := func(w int, c int64) (skip bool) {
+		if !visited[w] {
+			p.buildDependencies(w, visited)
 		}
-		fmt.Println("Install module {} successful", m.Name)
+		return
 	}
+	p.dependencies.Visit(index, b)
+
+	m := p.modules[index]
+	err := p.executor.Build(m.Path)
+
+	if err != nil {
+		log.Fatalf("Unable to build module %s. Error: %v", m.Path, err)
+	}
+
+	visited[index] = true
+	log.Printf("Install module %s successful", m.Name)
+}
+
+func (p *PyProject) buildModule(index int) {
+	m := p.modules[index]
+	err := p.executor.Build(m.Path)
+	if err != nil {
+		log.Fatalf("Unable to build module %s. Error: %v", m.Path, err)
+	}
+	log.Printf("Install module %s successful", m.Name)
 }
 
 func (p *PyProject) findIndex(module string) int {
@@ -113,6 +120,5 @@ func (p *PyProject) findIndex(module string) int {
 			index = v
 		}
 	}
-	println("ASDASD ", index)
 	return index
 }
