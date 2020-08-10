@@ -21,6 +21,12 @@ func build(c *cli.Context) error {
 	return runCommand("python setup.py install")
 }
 
+func release(c *cli.Context) error {
+
+	// TODO release all python modules
+	return nil
+}
+
 func activateEnv() error {
 	return runCommand("source venv/bin/activate") // TODO check if already active
 }

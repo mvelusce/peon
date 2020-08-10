@@ -48,28 +48,41 @@ func loadDependenciesGraph(modules []PyModule) *graph.Mutable {
 
 func (p *PyProject) Build() {
 
-	for v := 0; v < p.dependencies.Order(); v++ {
-		m := p.modules[v]
+	order, ac := graph.TopSort(p.dependencies)
+	if !ac {
+		log.Fatalf("ERROR Cyrcular dependency detected")
+	}
+
+	for v := 0; v < len(order); v++ {
+		i := len(order) - v - 1
+
+		m := p.modules[order[i]]
 		err := p.executor.Build(m.Path)
+
 		if err != nil {
-			fmt.Println("Unable to build module {}. Error: {}", m.Path, err)
+			log.Fatalf("Unable to build module %s. Error: %v", m.Path, err)
 		}
-		fmt.Println("Install module {} successful", p.modules[v].Name)
+		log.Printf("Install module %s successful", p.modules[v].Name)
 	}
 }
 
 func (p *PyProject) BuildModule(module string) {
 
-	index := 0
-	for v := 0; v < p.dependencies.Order(); v++ {
-		m := p.modules[v]
-		if m.Name == module {
-			index = v
-		}
-	}
+	index := p.findIndex(module)
+
+	depsError := p.buildDependencies(index)
+
+	p.buildModule(depsError, index)
+}
+
+func (p *PyProject) buildDependencies(index int) bool {
+
+	// TODO use depth first search to build modules with no deps first
 
 	b := func(w int, c int64) bool {
+		println("QWEQWE ", w)
 		m := p.modules[w]
+
 		err := p.executor.Build(m.Path)
 		if err != nil {
 			fmt.Println("Unable to build module {}. Error: {}", m.Path, err)
@@ -77,10 +90,12 @@ func (p *PyProject) BuildModule(module string) {
 		fmt.Println("Install module {} successful", m.Name)
 		return err != nil
 	}
+	depsError := p.dependencies.Visit(index, b)
+	return depsError
+}
 
-	res := p.dependencies.Visit(index, b)
-
-	if !res {
+func (p *PyProject) buildModule(depsError bool, index int) {
+	if !depsError {
 		m := p.modules[index]
 		err := p.executor.Build(m.Path)
 		if err != nil {
@@ -88,4 +103,16 @@ func (p *PyProject) BuildModule(module string) {
 		}
 		fmt.Println("Install module {} successful", m.Name)
 	}
+}
+
+func (p *PyProject) findIndex(module string) int {
+	index := 0
+	for v := 0; v < p.dependencies.Order(); v++ {
+		m := p.modules[v]
+		if m.Name == module {
+			index = v
+		}
+	}
+	println("ASDASD ", index)
+	return index
 }

@@ -8,8 +8,11 @@ import (
 func TestBuildProject(t *testing.T) {
 
 	var modules = []PyModule{
+		{"mod3", "mod3", []string{"mod2"}},
+		{"mod5", "mod5", []string{"mod3"}},
 		{"mod0", "mod0", []string{}},
 		{"mod1", "mod1", []string{"mod0"}},
+		{"mod4", "mod4", []string{"mod2", "mod1"}},
 		{"mod2", "mod2", []string{"mod1", "mod0"}},
 	}
 
@@ -21,10 +24,13 @@ func TestBuildProject(t *testing.T) {
 
 	project.Build()
 
-	assert.Equal(t, 3, len(e.executedActions))
+	assert.Equal(t, 6, len(e.executedActions))
 	assert.Equal(t, "mod0", e.executedActions[0])
 	assert.Equal(t, "mod1", e.executedActions[1])
 	assert.Equal(t, "mod2", e.executedActions[2])
+	assert.Equal(t, "mod3", e.executedActions[3])
+	assert.Equal(t, "mod4", e.executedActions[4])
+	assert.Equal(t, "mod5", e.executedActions[5])
 }
 
 func TestBuildModule(t *testing.T) {

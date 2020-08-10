@@ -1,8 +1,6 @@
 package project
 
 import (
-	"fmt"
-	"os/exec"
 	"strings"
 )
 
@@ -18,18 +16,4 @@ func TrimPrefix(s string, prefix string) string {
 		s = s[0+len(prefix):]
 	}
 	return s
-}
-
-func runCommand(command string) error {
-	cmd := exec.Command(command)
-
-	stdout, err := cmd.Output()
-
-	if err != nil {
-		fmt.Println(err.Error())
-		return err
-	}
-
-	fmt.Print(string(stdout))
-	return nil
 }
