@@ -7,7 +7,7 @@ import (
 
 func TestExecutorBuild(t *testing.T) {
 
-	e := &SetupPyExecutor{PyVersion: "python3.7"}
+	e := &SetupPyExecutor{PyVersion: "python3"}
 
 	err := e.Build("testdata/module_a")
 
@@ -16,7 +16,7 @@ func TestExecutorBuild(t *testing.T) {
 
 func TestExecutorClean(t *testing.T) {
 
-	e := &SetupPyExecutor{PyVersion: "python3.7"}
+	e := &SetupPyExecutor{PyVersion: "python3"}
 
 	err := e.Clean()
 
@@ -25,7 +25,7 @@ func TestExecutorClean(t *testing.T) {
 
 func TestExecutorTest(t *testing.T) {
 
-	e := &SetupPyExecutor{PyVersion: "python3.7"}
+	e := &SetupPyExecutor{PyVersion: "python3"}
 
 	err := e.Test("testdata/module_a")
 

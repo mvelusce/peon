@@ -27,7 +27,7 @@ func (e *SetupPyExecutor) Build(path string) error {
 		command := fmt.Sprintf("%s; %s; %s", activateVenv, cd, install)
 		return runCommand("bash", "-c", command)
 	}
-	log.Fatalf("Unable to init project. Error: %v", err)
+	log.Printf("Unable to init project. Error: %v", err)
 	return err
 }
 
@@ -50,7 +50,7 @@ func (e *SetupPyExecutor) Test(path string) error {
 		command := fmt.Sprintf("%s; %s; %s", activateVenv, cd, install)
 		return runCommand("bash", "-c", command)
 	}
-	log.Fatalf("Unable to init project. Error: %v", err)
+	log.Printf("Unable to init project. Error: %v", err)
 	return err
 }
 
