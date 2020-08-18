@@ -35,3 +35,30 @@ jobs:
 
     - name: Build
       run: go build -v cmd/wrapper/main.go
+
+#    - name: Checkout code
+#      uses: actions/checkout@v2
+#    - name: Create Release
+#      id: create_release
+#      uses: actions/create-release@v1
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+#      with:
+#        tag_name: ${{ github.ref }}
+#        release_name: Release ${{ github.ref }}
+#        body: |
+#          Changes in this Release
+#          - First Change
+#          - Second Change
+#        draft: false
+#        prerelease: false
+
+#    - name: Upload binaries to release
+#      uses: svenstaro/upload-release-action@v2
+#      with:
+#        repo_token: ${{ secrets.GITHUB_TOKEN }}
+#        file: target/release/mything
+#        asset_name: mything
+#        tag: ${{ github.ref }}
+#        overwrite: true
+#        body: "This is my release text"
