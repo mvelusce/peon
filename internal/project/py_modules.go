@@ -22,48 +22,52 @@ type modulesRoot struct {
 const modulesYaml = "modules.yml"
 const modulesJson = "modules.json"
 
-func loadModules(root string) []PyModule {
+func loadModules(root string) ([]PyModule, error) {
 
 	var modules []PyModule
 
-	modules = loadYamlModules(root)
+	modules, err := loadYamlModules(root)
 
-	if len(modules) == 0 {
-		modules = loadJsonModules(root)
+	if err != nil || len(modules) == 0 {
+		modules, err = loadJsonModules(root)
 	}
 
-	return parseSetupPyFiles(modules)
+	return parseSetupPyFiles(modules), err
 }
 
-func loadYamlModules(root string) []PyModule {
+func loadYamlModules(root string) ([]PyModule, error) {
 
 	r := TrimSuffix(root, "/")
 	var c []PyModule
 	modules, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", r, modulesYaml))
 	if err != nil {
-		log.Fatalf("Failed to read yaml modules. Error: %v", err)
+		log.Printf("Failed to read yaml modules. Error: %v", err)
+		return nil, err
 	}
 	err = yaml.Unmarshal(modules, &c)
 	if err != nil {
-		log.Fatalf("Failed to unmarshal yaml modules. Erroro: %v", err)
+		log.Printf("Failed to unmarshal yaml modules. Erroro: %v", err)
+		return nil, err
 	}
-	return appendRoot(r, c)
+	return appendRoot(r, c), nil
 }
 
-func loadJsonModules(root string) []PyModule {
+func loadJsonModules(root string) ([]PyModule, error) {
 
 	r := TrimSuffix(root, "/")
 	file, err := os.Open(fmt.Sprintf("%s/%s", r, modulesJson))
 	if err != nil {
-		log.Fatalf("Failed to read json modules. Error: %v ", err)
+		log.Printf("Failed to read json modules. Error: %v ", err)
+		return nil, err
 	}
 	decoder := json.NewDecoder(file)
 	rootModules := modulesRoot{}
 	err = decoder.Decode(&rootModules)
 	if err != nil {
-		log.Fatalf("Failed to decode json modules. Error: %v", err)
+		log.Printf("Failed to decode json modules. Error: %v", err)
+		return nil, err
 	}
-	return appendRoot(r, rootModules.Modules)
+	return appendRoot(r, rootModules.Modules), nil
 }
 
 func appendRoot(root string, modules []PyModule) []PyModule {

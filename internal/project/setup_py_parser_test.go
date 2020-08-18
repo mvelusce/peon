@@ -12,7 +12,7 @@ func TestParsingSetupPy(t *testing.T) {
 		{Name: "module_b"},
 	}
 
-	res, err := parseSetupPyFile("testdata", modules)
+	res, err := parseSetupPyFile("../../test/data/project", modules)
 
 	if err != nil {
 		t.Errorf("Parse return error %v", err)
@@ -27,8 +27,8 @@ func TestParsingSetupPy(t *testing.T) {
 func TestParsingSetupPyFiles(t *testing.T) {
 
 	modules := []PyModule{
-		{Name: "module_a", Path: "./testdata/module_a"},
-		{Name: "module_b", Path: "./testdata/module_b"},
+		{Name: "module_a", Path: "../../test/data/project/module_a"},
+		{Name: "module_b", Path: "../../test/data/project/module_b"},
 	}
 
 	res := parseSetupPyFiles(modules)
@@ -40,7 +40,7 @@ func TestParsingSetupPyFiles(t *testing.T) {
 	modA := res[0]
 	expectedA := PyModule{
 		Name: "module_a",
-		Path: "./testdata/module_a",
+		Path: "../../test/data/project/module_a",
 	}
 	if !reflect.DeepEqual(modA, expectedA) {
 		t.Errorf("expected %v, got %v", expectedA, modA)
@@ -49,7 +49,7 @@ func TestParsingSetupPyFiles(t *testing.T) {
 	modB := res[1]
 	expectedB := PyModule{
 		Name:         "module_b",
-		Path:         "./testdata/module_b",
+		Path:         "../../test/data/project/module_b",
 		Dependencies: []string{"module_a"},
 	}
 	if !reflect.DeepEqual(modB, expectedB) {

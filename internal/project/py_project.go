@@ -1,7 +1,7 @@
 package project
 
 import (
-	"github.com/skyveluscekm/setuptools.wrapper/cmd/wrapper/executor"
+	"github.com/skyveluscekm/setuptools.wrapper/internal/executor"
 	"github.com/yourbasic/graph"
 	"log"
 )
@@ -23,7 +23,10 @@ func LoadProject() PyProject {
 }
 
 func loadModulesAndGraph(projectRoot string) ([]PyModule, *graph.Mutable) {
-	modules := loadModules(projectRoot)
+	modules, err := loadModules(projectRoot)
+	if err != nil {
+		log.Fatalf("Unable to load modules. Error: %v", err)
+	}
 	g := loadDependenciesGraph(modules)
 	return modules, g
 }

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/skyveluscekm/setuptools.wrapper/cmd/wrapper/executor"
-	"github.com/skyveluscekm/setuptools.wrapper/cmd/wrapper/project"
+	"github.com/skyveluscekm/setuptools.wrapper/internal/executor"
+	"github.com/skyveluscekm/setuptools.wrapper/internal/project"
 	"log"
 	"os"
 	"os/exec"
