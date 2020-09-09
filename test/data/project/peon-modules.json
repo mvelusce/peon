@@ -2,23 +2,23 @@
   "modules": [
     {
       "module": "module_a",
-      "path": "asd"
+      "path": "./module_a"
     },
     {
       "module": "module_b",
-      "path": "qwe"
+      "path": "./module_b"
     },
     {
       "module": "module_c",
-      "path": "qwe"
+      "path": "./module_c"
     },
     {
       "module": "module_d",
-      "path": "qwe"
+      "path": "./module_d"
     },
     {
       "module": "module_e",
-      "path": "qwe"
+      "path": "./module_e"
     }
   ]
 }

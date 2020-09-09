@@ -15,8 +15,14 @@ type PyProject struct {
 
 func LoadProject(projectRoot string, pythonVersion string) (PyProject, error) {
 
-	modules, g, err := loadModulesAndGraph(projectRoot)
+	if projectRoot == "" {
+		projectRoot = "."
+	}
+	if pythonVersion == "" {
+		pythonVersion = "python3.7"
+	} // TODO save some where default configs ??
 
+	modules, g, err := loadModulesAndGraph(projectRoot)
 	e := &executor.SetupPyExecutor{PyVersion: pythonVersion}
 	return PyProject{modules, g, e}, err
 }

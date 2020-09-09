@@ -1,11 +1,17 @@
 # setuptools_wrapper
 
+BUILD
+```
+cd cmd/peon
+go build
+```
+
 RUN
 ```
-go run wrapper.go
+./peon -r ../../test/data/project build -m module_a
 ```
 
 TEST
 ```
-go test wrapper_test.go
+go test **/*.go
 ```
