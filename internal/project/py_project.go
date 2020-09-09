@@ -12,10 +12,8 @@ type PyProject struct {
 	executor     executor.PyExecutor
 }
 
-func LoadProject() PyProject {
+func LoadProject(projectRoot string, pythonVersion string) PyProject {
 
-	projectRoot := "testdata"
-	pythonVersion := "python3.7"
 	modules, g := loadModulesAndGraph(projectRoot)
 
 	e := &executor.SetupPyExecutor{PyVersion: pythonVersion}
@@ -59,7 +57,7 @@ func (p *PyProject) Build() {
 		i := len(order) - v - 1
 
 		m := p.modules[order[i]]
-		err := p.executor.Build(m.Path)
+		err := p.executor.Build(m.Path) // TODO make parametric on the executor function ??
 
 		if err != nil {
 			log.Fatalf("Unable to build module %s. Error: %v", m.Path, err)
@@ -75,6 +73,18 @@ func (p *PyProject) BuildModule(module string) {
 	visited := p.setupVisited()
 
 	p.buildDependencies(index, visited)
+}
+
+func (p *PyProject) Clean() {
+	// TODO
+}
+
+func (p *PyProject) Test() {
+	// TODO
+}
+
+func (p *PyProject) TestModule(module string) {
+	// TODO
 }
 
 func (p *PyProject) setupVisited() []bool {

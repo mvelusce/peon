@@ -19,8 +19,8 @@ type modulesRoot struct {
 	Modules []PyModule
 }
 
-const modulesYaml = "modules.yml"
-const modulesJson = "modules.json"
+const modulesYaml = "peon-modules.yml" // TODO move this in project and allow a custom file name
+const modulesJson = "peon-modules.json"
 
 func loadModules(root string) ([]PyModule, error) {
 
