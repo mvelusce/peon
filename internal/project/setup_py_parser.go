@@ -3,8 +3,8 @@ package project
 import (
 	"errors"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
-	"log"
 	"regexp"
 	"strings"
 )
@@ -30,7 +30,8 @@ func parseSetupPyFile(path string, modules []PyModule) (PyModule, error) {
 	p := TrimSuffix(path, "/")
 	file, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", p, setupPy))
 	if err != nil {
-		log.Fatalf("Failed to read setup.py file in %s. Error: %v", p, err)
+		log.Errorf("Failed to read setup.py file in %s. Error: %v", p, err)
+		return PyModule{}, err
 	}
 	content := string(file)
 

@@ -16,13 +16,13 @@ func TestBuildProject(t *testing.T) {
 		{"mod2", "mod2", []string{"mod1", "mod0"}},
 	}
 
-	g := loadDependenciesGraph(modules)
+	g, _ := loadDependenciesGraph(modules)
 
 	var buildModules []string
 	e := &MockExecutor{executedActions: buildModules}
 	project := PyProject{modules, g, e}
 
-	project.Build()
+	_ = project.Build()
 
 	assert.Equal(t, 6, len(e.executedActions))
 	assert.Equal(t, "mod0", e.executedActions[0])
@@ -42,13 +42,13 @@ func TestBuildModule(t *testing.T) {
 		{"mod4", "mod4", []string{"mod2", "mod1"}},
 	}
 
-	g := loadDependenciesGraph(modules)
+	g, _ := loadDependenciesGraph(modules)
 
 	var buildModules []string
 	e := &MockExecutor{executedActions: buildModules}
 	project := PyProject{modules, g, e}
 
-	project.BuildModule("mod2")
+	_ = project.BuildModule("mod2")
 
 	assert.Equal(t, 3, len(e.executedActions))
 	assert.Equal(t, "mod0", e.executedActions[0])
@@ -65,13 +65,13 @@ func TestBuildModule1(t *testing.T) {
 		{"mod4", "mod4", []string{"mod2", "mod1"}},
 	}
 
-	g := loadDependenciesGraph(modules)
+	g, _ := loadDependenciesGraph(modules)
 
 	var buildModules []string
 	e := &MockExecutor{executedActions: buildModules}
 	project := PyProject{modules, g, e}
 
-	project.BuildModule("mod4")
+	_ = project.BuildModule("mod4")
 
 	assert.Equal(t, 4, len(e.executedActions))
 	assert.Equal(t, "mod0", e.executedActions[0])
@@ -88,7 +88,7 @@ func TestLoadDependenciesGraph(t *testing.T) {
 		{"mod2", "mod2", []string{"mod1", "mod0"}},
 	}
 
-	res := loadDependenciesGraph(modules)
+	res, _ := loadDependenciesGraph(modules)
 
 	assert.Equal(t, "3 [(1 0) (2 0) (2 1)]", res.String())
 }

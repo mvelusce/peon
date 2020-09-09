@@ -1,9 +1,10 @@
 package project
 
 import (
+	"errors"
+	log "github.com/sirupsen/logrus"
 	"github.com/skyveluscekm/setuptools.wrapper/internal/executor"
 	"github.com/yourbasic/graph"
-	"log"
 )
 
 type PyProject struct {
@@ -12,24 +13,28 @@ type PyProject struct {
 	executor     executor.PyExecutor
 }
 
-func LoadProject(projectRoot string, pythonVersion string) PyProject {
+func LoadProject(projectRoot string, pythonVersion string) (PyProject, error) {
 
-	modules, g := loadModulesAndGraph(projectRoot)
+	modules, g, err := loadModulesAndGraph(projectRoot)
 
 	e := &executor.SetupPyExecutor{PyVersion: pythonVersion}
-	return PyProject{modules, g, e}
+	return PyProject{modules, g, e}, err
 }
 
-func loadModulesAndGraph(projectRoot string) ([]PyModule, *graph.Mutable) {
+func loadModulesAndGraph(projectRoot string) ([]PyModule, *graph.Mutable, error) {
 	modules, err := loadModules(projectRoot)
 	if err != nil {
-		log.Fatalf("Unable to load modules. Error: %v", err)
+		log.Errorf("Unable to load modules. Error: %v", err)
+		return nil, nil, err
 	}
-	g := loadDependenciesGraph(modules)
-	return modules, g
+	g, err := loadDependenciesGraph(modules)
+	if err != nil {
+		return nil, nil, err
+	}
+	return modules, g, nil
 }
 
-func loadDependenciesGraph(modules []PyModule) *graph.Mutable {
+func loadDependenciesGraph(modules []PyModule) (*graph.Mutable, error) {
 	g := graph.New(len(modules))
 	indexes := make(map[string]int)
 	for i, m := range modules {
@@ -41,16 +46,18 @@ func loadDependenciesGraph(modules []PyModule) *graph.Mutable {
 		}
 	}
 	if !graph.Acyclic(g) {
-		log.Fatalf("ERROR Cyrcular dependency detected")
+		log.Errorf("ERROR Circular dependency detected")
+		return nil, errors.New("ERROR Circular dependency detected")
 	}
-	return g
+	return g, nil
 }
 
-func (p *PyProject) Build() {
+func (p *PyProject) Build() error {
 
 	order, ac := graph.TopSort(p.dependencies)
 	if !ac {
-		log.Fatalf("ERROR Cyrcular dependency detected")
+		log.Errorf("ERROR Circular dependency detected")
+		return errors.New("ERROR Circular dependency detected")
 	}
 
 	for v := 0; v < len(order); v++ {
@@ -60,19 +67,21 @@ func (p *PyProject) Build() {
 		err := p.executor.Build(m.Path) // TODO make parametric on the executor function ??
 
 		if err != nil {
-			log.Fatalf("Unable to build module %s. Error: %v", m.Path, err)
+			log.Errorf("Unable to build module %s. Error: %v", m.Path, err)
+			return err
 		}
 		log.Printf("Install module %s successful", p.modules[v].Name)
 	}
+	return nil
 }
 
-func (p *PyProject) BuildModule(module string) {
+func (p *PyProject) BuildModule(module string) error {
 
 	index := p.findIndex(module)
 
 	visited := p.setupVisited()
 
-	p.buildDependencies(index, visited)
+	return p.buildDependencies(index, visited)
 }
 
 func (p *PyProject) Clean() {
@@ -95,11 +104,14 @@ func (p *PyProject) setupVisited() []bool {
 	return visited
 }
 
-func (p *PyProject) buildDependencies(index int, visited []bool) {
+func (p *PyProject) buildDependencies(index int, visited []bool) error {
 
 	b := func(w int, c int64) (skip bool) {
 		if !visited[w] {
-			p.buildDependencies(w, visited)
+			err := p.buildDependencies(w, visited)
+			if err != nil {
+				return
+			}
 		}
 		return
 	}
@@ -109,20 +121,24 @@ func (p *PyProject) buildDependencies(index int, visited []bool) {
 	err := p.executor.Build(m.Path)
 
 	if err != nil {
-		log.Fatalf("Unable to build module %s. Error: %v", m.Path, err)
+		log.Errorf("Unable to build module %s. Error: %v", m.Path, err)
+		return err
 	}
 
 	visited[index] = true
 	log.Printf("Install module %s successful", m.Name)
+	return nil
 }
 
-func (p *PyProject) buildModule(index int) {
+func (p *PyProject) buildModule(index int) error {
 	m := p.modules[index]
 	err := p.executor.Build(m.Path)
 	if err != nil {
-		log.Fatalf("Unable to build module %s. Error: %v", m.Path, err)
+		log.Errorf("Unable to build module %s. Error: %v", m.Path, err)
+		return err
 	}
 	log.Printf("Install module %s successful", m.Name)
+	return nil
 }
 
 func (p *PyProject) findIndex(module string) int {
