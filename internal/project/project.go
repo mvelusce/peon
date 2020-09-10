@@ -2,8 +2,9 @@ package project
 
 import (
 	"errors"
+
 	log "github.com/sirupsen/logrus"
-	"github.com/skyveluscekm/setuptools.wrapper/internal/executor"
+	"github.com/skyveluscekm/peon/internal/executor"
 	"github.com/yourbasic/graph"
 )
 

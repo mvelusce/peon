@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/skyveluscekm/setuptools.wrapper/internal/project"
+	"github.com/skyveluscekm/peon/internal/project"
 	"github.com/urfave/cli/v2"
 )
 

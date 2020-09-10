@@ -34,7 +34,9 @@ jobs:
       run: go test -v ./internal/project
 
     - name: Build
-      run: go build -v cmd/peon/main.go
+      run: |
+        cd cmd/peon/
+        go build
 
 #    - name: Checkout code
 #      uses: actions/checkout@v2
