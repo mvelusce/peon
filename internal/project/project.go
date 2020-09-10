@@ -8,13 +8,13 @@ import (
 	"github.com/yourbasic/graph"
 )
 
-type PyProject struct {
-	modules      []PyModule
+type Project struct {
+	modules      []Module
 	dependencies *graph.Mutable
-	executor     executor.PyExecutor
+	executor     executor.Executor
 }
 
-func LoadProject(projectRoot string, pythonVersion string) (PyProject, error) {
+func LoadProject(projectRoot string, pythonVersion string) (Project, error) {
 
 	if projectRoot == "" {
 		projectRoot = "."
@@ -25,10 +25,10 @@ func LoadProject(projectRoot string, pythonVersion string) (PyProject, error) {
 
 	modules, g, err := loadModulesAndGraph(projectRoot)
 	e := &executor.SetupPyExecutor{PyVersion: pythonVersion}
-	return PyProject{modules, g, e}, err
+	return Project{modules, g, e}, err
 }
 
-func loadModulesAndGraph(projectRoot string) ([]PyModule, *graph.Mutable, error) {
+func loadModulesAndGraph(projectRoot string) ([]Module, *graph.Mutable, error) {
 	modules, err := loadModules(projectRoot)
 	if err != nil {
 		log.Errorf("Unable to load modules. Error: %v", err)
@@ -41,7 +41,7 @@ func loadModulesAndGraph(projectRoot string) ([]PyModule, *graph.Mutable, error)
 	return modules, g, nil
 }
 
-func loadDependenciesGraph(modules []PyModule) (*graph.Mutable, error) {
+func loadDependenciesGraph(modules []Module) (*graph.Mutable, error) {
 	g := graph.New(len(modules))
 	indexes := make(map[string]int)
 	for i, m := range modules {
@@ -59,7 +59,7 @@ func loadDependenciesGraph(modules []PyModule) (*graph.Mutable, error) {
 	return g, nil
 }
 
-func (p *PyProject) Build() error {
+func (p *Project) Build() error {
 
 	order, ac := graph.TopSort(p.dependencies)
 	if !ac {
@@ -82,7 +82,7 @@ func (p *PyProject) Build() error {
 	return nil
 }
 
-func (p *PyProject) BuildModule(module string) error {
+func (p *Project) BuildModule(module string) error {
 
 	index := p.findIndex(module)
 
@@ -91,19 +91,19 @@ func (p *PyProject) BuildModule(module string) error {
 	return p.buildDependencies(index, visited)
 }
 
-func (p *PyProject) Clean() {
+func (p *Project) Clean() {
 	// TODO
 }
 
-func (p *PyProject) Test() {
+func (p *Project) Test() {
 	// TODO
 }
 
-func (p *PyProject) TestModule(module string) {
+func (p *Project) TestModule(module string) {
 	// TODO
 }
 
-func (p *PyProject) setupVisited() []bool {
+func (p *Project) setupVisited() []bool {
 	visited := make([]bool, p.dependencies.Order())
 	for v := 0; v < p.dependencies.Order(); v++ {
 		visited[v] = false
@@ -111,7 +111,7 @@ func (p *PyProject) setupVisited() []bool {
 	return visited
 }
 
-func (p *PyProject) buildDependencies(index int, visited []bool) error {
+func (p *Project) buildDependencies(index int, visited []bool) error {
 
 	b := func(w int, c int64) (skip bool) {
 		if !visited[w] {
@@ -137,7 +137,7 @@ func (p *PyProject) buildDependencies(index int, visited []bool) error {
 	return nil
 }
 
-func (p *PyProject) buildModule(index int) error {
+func (p *Project) buildModule(index int) error {
 	m := p.modules[index]
 	err := p.executor.Build(m.Path)
 	if err != nil {
@@ -148,7 +148,7 @@ func (p *PyProject) buildModule(index int) error {
 	return nil
 }
 
-func (p *PyProject) findIndex(module string) int {
+func (p *Project) findIndex(module string) int {
 	index := 0
 	for v := 0; v < p.dependencies.Order(); v++ {
 		m := p.modules[v]

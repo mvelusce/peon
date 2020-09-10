@@ -7,7 +7,7 @@ import (
 
 func TestBuildProject(t *testing.T) {
 
-	var modules = []PyModule{
+	var modules = []Module{
 		{"mod3", "mod3", []string{"mod2"}},
 		{"mod5", "mod5", []string{"mod3"}},
 		{"mod0", "mod0", []string{}},
@@ -20,7 +20,7 @@ func TestBuildProject(t *testing.T) {
 
 	var buildModules []string
 	e := &MockExecutor{executedActions: buildModules}
-	project := PyProject{modules, g, e}
+	project := Project{modules, g, e}
 
 	_ = project.Build()
 
@@ -35,7 +35,7 @@ func TestBuildProject(t *testing.T) {
 
 func TestBuildModule(t *testing.T) {
 
-	var modules = []PyModule{
+	var modules = []Module{
 		{"mod0", "mod0", []string{}},
 		{"mod1", "mod1", []string{"mod0"}},
 		{"mod2", "mod2", []string{"mod1", "mod0"}},
@@ -46,7 +46,7 @@ func TestBuildModule(t *testing.T) {
 
 	var buildModules []string
 	e := &MockExecutor{executedActions: buildModules}
-	project := PyProject{modules, g, e}
+	project := Project{modules, g, e}
 
 	_ = project.BuildModule("mod2")
 
@@ -58,7 +58,7 @@ func TestBuildModule(t *testing.T) {
 
 func TestBuildModule1(t *testing.T) {
 
-	var modules = []PyModule{
+	var modules = []Module{
 		{"mod0", "mod0", []string{}},
 		{"mod1", "mod1", []string{"mod0"}},
 		{"mod2", "mod2", []string{"mod1", "mod0"}},
@@ -69,7 +69,7 @@ func TestBuildModule1(t *testing.T) {
 
 	var buildModules []string
 	e := &MockExecutor{executedActions: buildModules}
-	project := PyProject{modules, g, e}
+	project := Project{modules, g, e}
 
 	_ = project.BuildModule("mod4")
 
@@ -82,7 +82,7 @@ func TestBuildModule1(t *testing.T) {
 
 func TestLoadDependenciesGraph(t *testing.T) {
 
-	var modules = []PyModule{
+	var modules = []Module{
 		{"mod0", "mod0", []string{}},
 		{"mod1", "mod1", []string{"mod0"}},
 		{"mod2", "mod2", []string{"mod1", "mod0"}},

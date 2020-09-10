@@ -6,7 +6,7 @@ import (
 	"os/exec"
 )
 
-type PyExecutor interface {
+type Executor interface {
 	Build(path string) error
 	Run(path string) error
 	Clean() error

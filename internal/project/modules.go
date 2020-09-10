@@ -9,22 +9,22 @@ import (
 	"os"
 )
 
-type PyModule struct {
+type Module struct {
 	Name         string `json:"module" yaml:"module"`
 	Path         string `json:"path" yaml:"path"`
 	Dependencies []string
 }
 
 type modulesRoot struct {
-	Modules []PyModule
+	Modules []Module
 }
 
 const modulesYaml = "peon-modules.yml" // TODO move this in project and allow a custom file name
 const modulesJson = "peon-modules.json"
 
-func loadModules(root string) ([]PyModule, error) {
+func loadModules(root string) ([]Module, error) {
 
-	var modules []PyModule
+	var modules []Module
 
 	modules, err := loadYamlModules(root)
 
@@ -35,10 +35,10 @@ func loadModules(root string) ([]PyModule, error) {
 	return parseSetupPyFiles(modules), err
 }
 
-func loadYamlModules(root string) ([]PyModule, error) {
+func loadYamlModules(root string) ([]Module, error) {
 
 	r := TrimSuffix(root, "/")
-	var c []PyModule
+	var c []Module
 	modules, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", r, modulesYaml))
 	if err != nil {
 		log.Printf("Failed to read yaml modules. Error: %v", err)
@@ -52,7 +52,7 @@ func loadYamlModules(root string) ([]PyModule, error) {
 	return appendRoot(r, c), nil
 }
 
-func loadJsonModules(root string) ([]PyModule, error) {
+func loadJsonModules(root string) ([]Module, error) {
 
 	r := TrimSuffix(root, "/")
 	file, err := os.Open(fmt.Sprintf("%s/%s", r, modulesJson))
@@ -70,10 +70,10 @@ func loadJsonModules(root string) ([]PyModule, error) {
 	return appendRoot(r, rootModules.Modules), nil
 }
 
-func appendRoot(root string, modules []PyModule) []PyModule {
+func appendRoot(root string, modules []Module) []Module {
 	r := TrimSuffix(root, "/")
 
-	var mods []PyModule
+	var mods []Module
 	for _, m := range modules {
 		path := TrimPrefix(TrimPrefix(m.Path, "."), "/")
 		p := fmt.Sprintf("%s/%s", r, path)
