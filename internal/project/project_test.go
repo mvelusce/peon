@@ -93,6 +93,48 @@ func TestLoadDependenciesGraph(t *testing.T) {
 	assert.Equal(t, "3 [(1 0) (2 0) (2 1)]", res.String())
 }
 
+func TestClean(t *testing.T) {
+
+	var modules []Module
+
+	g, _ := loadDependenciesGraph(modules)
+
+	var buildModules []string
+	e := &MockExecutor{executedActions: buildModules}
+	project := Project{modules, g, e}
+
+	_ = project.Clean()
+
+	assert.Equal(t, 1, len(e.executedActions))
+	assert.Equal(t, "clean", e.executedActions[0])
+}
+
+func TestTestProject(t *testing.T) {
+
+	var modules = []Module{
+		{"mod3", "mod3", []string{"mod2"}},
+		{"mod5", "mod5", []string{"mod3"}},
+		{"mod0", "mod0", []string{}},
+		{"mod1", "mod1", []string{"mod0"}},
+		{"mod4", "mod4", []string{"mod2", "mod1"}},
+		{"mod2", "mod2", []string{"mod1", "mod0"}},
+	}
+
+	g, _ := loadDependenciesGraph(modules)
+
+	var buildModules []string
+	e := &MockExecutor{executedActions: buildModules}
+	project := Project{modules, g, e}
+
+	_ = project.Test()
+
+	assert.Equal(t, 12, len(e.executedActions))
+	assert.Equal(t, "mod0", e.executedActions[0])
+	assert.Equal(t, "mod1", e.executedActions[1])
+	assert.Equal(t, "test-mod0", e.executedActions[6])
+	assert.Equal(t, "test-mod1", e.executedActions[7])
+}
+
 type MockExecutor struct {
 	executedActions []string
 }
@@ -102,12 +144,11 @@ func (e *MockExecutor) Build(path string) error {
 	return nil
 }
 
-func (e *MockExecutor) Run(path string) error {
-	return nil
-}
 func (e *MockExecutor) Clean() error {
+	e.executedActions = append(e.executedActions, "clean")
 	return nil
 }
 func (e *MockExecutor) Test(path string) error {
+	e.executedActions = append(e.executedActions, "test-"+path)
 	return nil
 }

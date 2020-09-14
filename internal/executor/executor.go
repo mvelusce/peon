@@ -8,7 +8,6 @@ import (
 
 type Executor interface {
 	Build(path string) error
-	Run(path string) error
 	Clean() error
 	Test(path string) error
 }
@@ -31,11 +30,6 @@ func (e *SetupPyExecutor) Build(path string) error {
 	}
 	log.Printf("Unable to init project. Error: %v", err)
 	return err
-}
-
-func (e *SetupPyExecutor) Run(path string) error {
-	// TODO does it make sense ??
-	return nil
 }
 
 func (e *SetupPyExecutor) Clean() error {
