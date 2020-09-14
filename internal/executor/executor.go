@@ -17,11 +17,13 @@ type SetupPyExecutor struct {
 	PyVersion string
 }
 
+const venv = "peonvenv"
+
 func (e *SetupPyExecutor) Build(path string) error {
 	log.Printf("Building %s", path)
 	err := e.createVenv()
 	if err == nil {
-		activateVenv := "source venv/bin/activate"
+		activateVenv := fmt.Sprintf("source %s/bin/activate", venv)
 		cd := fmt.Sprintf("cd %s", path)
 		install := "python setup.py install"
 		command := fmt.Sprintf("%s; %s; %s", activateVenv, cd, install)
@@ -37,14 +39,14 @@ func (e *SetupPyExecutor) Run(path string) error {
 }
 
 func (e *SetupPyExecutor) Clean() error {
-	return runCommand("rm", "-r", "venv")
+	return runCommand("rm", "-r", venv)
 }
 
 func (e *SetupPyExecutor) Test(path string) error {
 	log.Printf("Testing %s", path)
 	err := e.createVenv()
 	if err == nil {
-		activateVenv := "source venv/bin/activate"
+		activateVenv := fmt.Sprintf("source %s/bin/activate", venv)
 		cd := fmt.Sprintf("cd %s", path)
 		test := "python setup.py test"
 		command := fmt.Sprintf("%s; %s; %s", activateVenv, cd, test)
@@ -56,7 +58,7 @@ func (e *SetupPyExecutor) Test(path string) error {
 
 func (e *SetupPyExecutor) createVenv() error {
 	command := fmt.Sprintf("%s", e.PyVersion)
-	return runCommand(command, "-m", "venv", "venv")
+	return runCommand(command, "-m", "venv", venv)
 }
 
 func runCommand(command string, arg ...string) error {
@@ -69,7 +71,7 @@ func runCommandInPath(path string, command string, arg ...string) error {
 
 	stdout, err := cmd.CombinedOutput()
 
-	log.Println(string(stdout))
+	log.Infof("Command output: \n%s\n", string(stdout))
 
 	if err != nil {
 		log.Println(err.Error())
