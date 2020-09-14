@@ -24,18 +24,16 @@ func build(c *cli.Context) error {
 	// TODO not supported parameter
 	c.String("modules-file")
 
-	println(pythonVersion)
-	mod := c.Args().First()
-	println(mod)
+	module := c.Args().First()
 
 	p, err := project.LoadProject(projectRoot, pythonVersion)
 	if err != nil {
 		return err
 	}
-	if mod == "" {
+	if module == "" {
 		return p.Build()
 	} else {
-		return p.BuildModule(mod)
+		return p.BuildModule(module)
 	}
 }
 
