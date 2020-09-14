@@ -15,7 +15,7 @@ go build
 
 RUN
 ```bash
-./peon -r ../../test/data/project build -m module_a
+./peon -r ../../test/data/project build module_a
 ```
 
 TEST

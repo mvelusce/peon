@@ -60,7 +60,47 @@ func loadDependenciesGraph(modules []Module) (*graph.Mutable, error) {
 }
 
 func (p *Project) Build() error {
+	return p.executeOnAll(p.executor.Build)
+}
 
+func (p *Project) BuildModule(module string) error {
+
+	index := p.findIndex(module)
+
+	visited := p.setupVisited()
+
+	return p.executeOnDependencies(index, visited, p.executor.Build)
+}
+
+func (p *Project) Clean() error {
+	return p.executor.Clean()
+}
+
+func (p *Project) Test() error {
+	err := p.Build()
+	if err != nil {
+		log.Errorf("Unable to test all. Error: %v", err)
+		return err
+	}
+	return p.executeOnAll(p.executor.Test)
+}
+
+func (p *Project) TestModule(module string) error {
+
+	err := p.BuildModule(module)
+	if err != nil {
+		log.Errorf("Unable to test module: %s. Error: %v", module, err)
+		return err
+	}
+
+	index := p.findIndex(module)
+
+	visited := p.setupVisited()
+
+	return p.executeOnDependencies(index, visited, p.executor.Test)
+}
+
+func (p *Project) executeOnAll(action func(string) error) error {
 	order, ac := graph.TopSort(p.dependencies)
 	if !ac {
 		log.Errorf("ERROR Circular dependency detected")
@@ -71,7 +111,7 @@ func (p *Project) Build() error {
 		i := len(order) - v - 1
 
 		m := p.modules[order[i]]
-		err := p.executor.Build(m.Path) // TODO make parametric on the executor function ??
+		err := action(m.Path)
 
 		if err != nil {
 			log.Errorf("Unable to build module %s. Error: %v", m.Path, err)
@@ -82,27 +122,6 @@ func (p *Project) Build() error {
 	return nil
 }
 
-func (p *Project) BuildModule(module string) error {
-
-	index := p.findIndex(module)
-
-	visited := p.setupVisited()
-
-	return p.buildDependencies(index, visited)
-}
-
-func (p *Project) Clean() {
-	// TODO
-}
-
-func (p *Project) Test() {
-	// TODO
-}
-
-func (p *Project) TestModule(module string) {
-	// TODO
-}
-
 func (p *Project) setupVisited() []bool {
 	visited := make([]bool, p.dependencies.Order())
 	for v := 0; v < p.dependencies.Order(); v++ {
@@ -111,11 +130,11 @@ func (p *Project) setupVisited() []bool {
 	return visited
 }
 
-func (p *Project) buildDependencies(index int, visited []bool) error {
+func (p *Project) executeOnDependencies(index int, visited []bool, action func(string) error) error {
 
 	b := func(w int, c int64) (skip bool) {
 		if !visited[w] {
-			err := p.buildDependencies(w, visited)
+			err := p.executeOnDependencies(w, visited, action)
 			if err != nil {
 				return
 			}
@@ -125,7 +144,7 @@ func (p *Project) buildDependencies(index int, visited []bool) error {
 	p.dependencies.Visit(index, b)
 
 	m := p.modules[index]
-	err := p.executor.Build(m.Path)
+	err := action(m.Path)
 
 	if err != nil {
 		log.Errorf("Unable to build module %s. Error: %v", m.Path, err)
@@ -133,17 +152,6 @@ func (p *Project) buildDependencies(index int, visited []bool) error {
 	}
 
 	visited[index] = true
-	log.Printf("Install module %s successful", m.Name)
-	return nil
-}
-
-func (p *Project) buildModule(index int) error {
-	m := p.modules[index]
-	err := p.executor.Build(m.Path)
-	if err != nil {
-		log.Errorf("Unable to build module %s. Error: %v", m.Path, err)
-		return err
-	}
 	log.Printf("Install module %s successful", m.Name)
 	return nil
 }

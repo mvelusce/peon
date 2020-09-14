@@ -2,7 +2,7 @@ package executor
 
 import (
 	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os/exec"
 )
 
@@ -46,8 +46,8 @@ func (e *SetupPyExecutor) Test(path string) error {
 	if err == nil {
 		activateVenv := "source venv/bin/activate"
 		cd := fmt.Sprintf("cd %s", path)
-		install := "python setup.py test"
-		command := fmt.Sprintf("%s; %s; %s", activateVenv, cd, install)
+		test := "python setup.py test"
+		command := fmt.Sprintf("%s; %s; %s", activateVenv, cd, test)
 		return runCommand("bash", "-c", command)
 	}
 	log.Printf("Unable to init project. Error: %v", err)
