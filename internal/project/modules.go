@@ -3,9 +3,9 @@ package project
 import (
 	"encoding/json"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"log"
 	"os"
 )
 
@@ -41,12 +41,12 @@ func loadYamlModules(root string) ([]Module, error) {
 	var c []Module
 	modules, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", r, modulesYaml))
 	if err != nil {
-		log.Printf("Failed to read yaml modules. Error: %v", err)
+		log.Infof("Failed to read yaml modules. Error: %v", err)
 		return nil, err
 	}
 	err = yaml.Unmarshal(modules, &c)
 	if err != nil {
-		log.Printf("Failed to unmarshal yaml modules. Erroro: %v", err)
+		log.Infof("Failed to unmarshal yaml modules. Erroro: %v", err)
 		return nil, err
 	}
 	return appendRoot(r, c), nil
@@ -57,14 +57,14 @@ func loadJsonModules(root string) ([]Module, error) {
 	r := TrimSuffix(root, "/")
 	file, err := os.Open(fmt.Sprintf("%s/%s", r, modulesJson))
 	if err != nil {
-		log.Printf("Failed to read json modules. Error: %v ", err)
+		log.Infof("Failed to read json modules. Error: %v ", err)
 		return nil, err
 	}
 	decoder := json.NewDecoder(file)
 	rootModules := modulesRoot{}
 	err = decoder.Decode(&rootModules)
 	if err != nil {
-		log.Printf("Failed to decode json modules. Error: %v", err)
+		log.Infof("Failed to decode json modules. Error: %v", err)
 		return nil, err
 	}
 	return appendRoot(r, rootModules.Modules), nil

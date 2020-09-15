@@ -1,14 +1,16 @@
 package main
 
 import (
+	"errors"
 	"github.com/skyveluscekm/peon/internal/project"
 	"github.com/urfave/cli/v2"
 )
 
 var commands = []*cli.Command{
 	&commandBuild,
-	&testBuild,
-	&cleanBuild,
+	&commandTest,
+	&commandClean,
+	&commandExec,
 }
 
 var commandBuild = cli.Command{
@@ -19,7 +21,7 @@ var commandBuild = cli.Command{
 	Action:      buildCommand,
 }
 
-var testBuild = cli.Command{
+var commandTest = cli.Command{
 	Name:        "test",
 	Aliases:     []string{"t"},
 	Usage:       "Test all modules. Pass module name to test the module (and it's dependencies).",
@@ -27,12 +29,20 @@ var testBuild = cli.Command{
 	Action:      testCommand,
 }
 
-var cleanBuild = cli.Command{
+var commandClean = cli.Command{
 	Name:        "clean",
 	Aliases:     []string{"c"},
 	Usage:       "Clean all modules by deleting the virtual env.",
 	Description: "Clean all modules",
 	Action:      cleanCommand,
+}
+
+var commandExec = cli.Command{
+	Name:        "exec",
+	Aliases:     []string{"e"},
+	Usage:       "Exec command on modules. Examples:\n\t Run command on all modules: peon exec 'my custom command'\n\t Run command on a module and its dependencies: peon exec my-module 'my custom command'",
+	Description: "Exec command on modules",
+	Action:      execCommand,
 }
 
 func buildCommand(c *cli.Context) error {
@@ -69,10 +79,34 @@ func cleanCommand(c *cli.Context) error {
 	return p.Clean()
 }
 
-func release(c *cli.Context) error {
+func execCommand(c *cli.Context) error {
 
-	// TODO release all python modules
-	return nil
+	module := ""
+	command := ""
+	if c.Args().Len() > 1 {
+		module = c.Args().First()
+		command = c.Args().Get(1)
+	} else {
+		command = c.Args().First()
+	}
+
+	p, err := loadProject(c)
+	if err != nil {
+		return err
+	}
+
+	return exec(&p, module, command)
+}
+
+func exec(p *project.Project, module string, command string) error {
+	if command == "" {
+		return errors.New("empty command")
+	}
+	if module == "" {
+		return p.Exec(command)
+	} else {
+		return p.ExecModule(command, module)
+	}
 }
 
 func executeCommand(c *cli.Context, runCommand func(*project.Project, string) error) error {

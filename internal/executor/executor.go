@@ -10,26 +10,18 @@ type Executor interface {
 	Build(path string) error
 	Clean() error
 	Test(path string) error
+	Exec(command string, path string) error
 }
 
 type SetupPyExecutor struct {
-	PyVersion string
+	PyVersion string // TODO add venv path
 }
 
 const venv = "peonvenv"
 
 func (e *SetupPyExecutor) Build(path string) error {
 	log.Printf("Building %s", path)
-	err := e.createVenv()
-	if err == nil {
-		activateVenv := fmt.Sprintf("source %s/bin/activate", venv)
-		cd := fmt.Sprintf("cd %s", path)
-		install := "python setup.py install"
-		command := fmt.Sprintf("%s; %s; %s", activateVenv, cd, install)
-		return runCommand("bash", "-c", command)
-	}
-	log.Printf("Unable to init project. Error: %v", err)
-	return err
+	return e.runInVenv("python setup.py install", path)
 }
 
 func (e *SetupPyExecutor) Clean() error {
@@ -38,21 +30,29 @@ func (e *SetupPyExecutor) Clean() error {
 
 func (e *SetupPyExecutor) Test(path string) error {
 	log.Printf("Testing %s", path)
-	err := e.createVenv()
-	if err == nil {
-		activateVenv := fmt.Sprintf("source %s/bin/activate", venv)
-		cd := fmt.Sprintf("cd %s", path)
-		test := "python setup.py test"
-		command := fmt.Sprintf("%s; %s; %s", activateVenv, cd, test)
-		return runCommand("bash", "-c", command)
-	}
-	log.Printf("Unable to init project. Error: %v", err)
-	return err
+	return e.runInVenv("python setup.py test", path)
+}
+
+func (e *SetupPyExecutor) Exec(command string, path string) error {
+	log.Printf("Executing command %s in %s", command, path)
+	return e.runInVenv(command, path)
 }
 
 func (e *SetupPyExecutor) createVenv() error {
 	command := fmt.Sprintf("%s", e.PyVersion)
 	return runCommand(command, "-m", "venv", venv)
+}
+
+func (e *SetupPyExecutor) runInVenv(command string, path string) error {
+	err := e.createVenv()
+	if err == nil {
+		activateVenv := fmt.Sprintf("source %s/bin/activate", venv)
+		cd := fmt.Sprintf("cd %s", path)
+		command := fmt.Sprintf("%s; %s; %s", activateVenv, cd, command)
+		return runCommand("bash", "-c", command)
+	}
+	log.Errorf("Unable to init virtual env. Error: %v", err)
+	return err
 }
 
 func runCommand(command string, arg ...string) error {

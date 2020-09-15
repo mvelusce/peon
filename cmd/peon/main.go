@@ -12,7 +12,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "peon"
 	app.Version = "0.0.0"
-	app.Usage = "One script to rule them all!"
+	app.Usage = "Something needs doing?"
 	app.Flags = []cli.Flag{
 		//&cli.StringFlag{Name: "modules-file", Aliases: []string{"f"}, Usage: ""},
 		&cli.StringFlag{Name: "project-root", Aliases: []string{"r"}, Usage: ""},

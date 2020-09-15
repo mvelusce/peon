@@ -100,6 +100,26 @@ func (p *Project) TestModule(module string) error {
 	return p.executeOnDependencies(index, visited, p.executor.Test)
 }
 
+func (p *Project) Exec(command string) error {
+
+	exec := func(path string) error {
+		return p.executor.Exec(command, path)
+	}
+	return p.executeOnAll(exec)
+}
+
+func (p *Project) ExecModule(command string, module string) error {
+
+	index := p.findIndex(module)
+
+	visited := p.setupVisited()
+
+	exec := func(path string) error {
+		return p.executor.Exec(command, path)
+	}
+	return p.executeOnDependencies(index, visited, exec)
+}
+
 func (p *Project) executeOnAll(action func(string) error) error {
 	order, ac := graph.TopSort(p.dependencies)
 	if !ac {

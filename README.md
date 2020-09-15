@@ -18,6 +18,11 @@ RUN
 ./peon -r ../../test/data/project build module_a
 ```
 
+EXEC
+```bash
+./peon -r ../../test/data/project exec module_d 'python setup.py test'
+```
+
 TEST
 ```bash
 go test ./...
