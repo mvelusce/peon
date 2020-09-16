@@ -124,10 +124,10 @@ func loadProject(c *cli.Context) (project.Project, error) {
 
 	projectRoot := c.String("project-root")
 	pythonVersion := c.String("py-version")
-	// TODO not supported parameter
-	c.String("modules-file")
 
-	p, err := project.LoadProject(projectRoot, pythonVersion)
+	config := project.NewConfig(projectRoot, pythonVersion)
+
+	p, err := project.LoadProject(config)
 
 	return p, err
 }

@@ -14,7 +14,6 @@ func main() {
 	app.Version = "0.0.0"
 	app.Usage = "Something needs doing?"
 	app.Flags = []cli.Flag{
-		//&cli.StringFlag{Name: "modules-file", Aliases: []string{"f"}, Usage: ""},
 		&cli.StringFlag{Name: "project-root", Aliases: []string{"r"}, Usage: ""},
 		&cli.StringFlag{Name: "py-version", Aliases: []string{"p"}, Usage: ""},
 	}

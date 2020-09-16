@@ -14,17 +14,10 @@ type Project struct {
 	executor     executor.Executor
 }
 
-func LoadProject(projectRoot string, pythonVersion string) (Project, error) {
+func LoadProject(config *Config) (Project, error) {
 
-	if projectRoot == "" {
-		projectRoot = "."
-	}
-	if pythonVersion == "" {
-		pythonVersion = "python3.7"
-	} // TODO save some where default configs ??
-
-	modules, g, err := loadModulesAndGraph(projectRoot)
-	e := &executor.SetupPyExecutor{PyVersion: pythonVersion}
+	modules, g, err := loadModulesAndGraph(config.ProjectRoot)
+	e := &executor.SetupPyExecutor{PyVersion: config.PythonExec}
 	return Project{modules, g, e}, err
 }
 
