@@ -130,9 +130,9 @@ func TestTestProject(t *testing.T) {
 
 	assert.Equal(t, 12, len(e.executedActions))
 	assert.Equal(t, "mod0", e.executedActions[0])
-	assert.Equal(t, "mod1", e.executedActions[1])
-	assert.Equal(t, "test-mod0", e.executedActions[6])
-	assert.Equal(t, "test-mod1", e.executedActions[7])
+	assert.Equal(t, "test-mod0", e.executedActions[1])
+	assert.Equal(t, "mod1", e.executedActions[2])
+	assert.Equal(t, "test-mod1", e.executedActions[3])
 }
 
 func TestExecProject(t *testing.T) {

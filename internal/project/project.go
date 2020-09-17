@@ -76,27 +76,29 @@ func (p *Project) Clean() error {
 }
 
 func (p *Project) Test() error {
-	err := p.Build()
-	if err != nil {
-		log.Errorf("Unable to test all. Error: %v", err)
-		return err
-	}
-	return p.executeOnAll(p.executor.Test)
+	return p.executeOnAll(p.test)
 }
 
 func (p *Project) TestModule(module string) error {
-
-	err := p.BuildModule(module)
-	if err != nil {
-		log.Errorf("Unable to test module: %s. Error: %v", module, err)
-		return err
-	}
 
 	index := p.findIndex(module)
 
 	visited := p.setupVisited()
 
-	return p.executeOnDependencies(index, visited, p.executor.Test)
+	return p.executeOnDependencies(index, visited, p.test)
+}
+
+func (p *Project) test(path string) error {
+	err := p.executor.Build(path)
+	if err != nil {
+		log.Errorf("Unable to build path %s during test all. Error: %v", path, err)
+		return err
+	}
+	err = p.executor.Test(path)
+	if err != nil {
+		log.Errorf("Unable to test path %s during test all. Error: %v", path, err)
+	}
+	return err
 }
 
 func (p *Project) Exec(command string) error {
