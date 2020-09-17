@@ -14,11 +14,17 @@ type Project struct {
 	executor     executor.Executor
 }
 
-func LoadProject(config *Config) (Project, error) {
+func LoadProject(config *Config, dryRun bool) (Project, error) {
 
 	modules, g, err := loadModulesAndGraph(config.ProjectRoot)
-	e := &executor.SetupPyExecutor{PyVersion: config.PythonExec}
-	return Project{modules, g, e}, err
+
+	if !dryRun {
+		e := &executor.SetupPyExecutor{PyVersion: config.PythonExec}
+		return Project{modules, g, e}, err
+	} else {
+		e := &DryRunExecutor{}
+		return Project{modules, g, e}, err
+	}
 }
 
 func loadModulesAndGraph(projectRoot string) ([]Module, *graph.Mutable, error) {

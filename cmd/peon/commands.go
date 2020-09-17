@@ -124,10 +124,11 @@ func loadProject(c *cli.Context) (project.Project, error) {
 
 	projectRoot := c.String("project-root")
 	pythonVersion := c.String("py-version")
+	dryRun := c.Bool("dry-run")
 
 	config := project.NewConfig(projectRoot, pythonVersion)
 
-	p, err := project.LoadProject(config)
+	p, err := project.LoadProject(config, dryRun)
 
 	return p, err
 }

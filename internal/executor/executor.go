@@ -14,27 +14,28 @@ type Executor interface {
 }
 
 type SetupPyExecutor struct {
-	PyVersion string // TODO add venv path
+	PyVersion string
 }
 
 const venv = "peonvenv"
 
 func (e *SetupPyExecutor) Build(path string) error {
-	log.Printf("Building %s", path)
+	log.Infof("Building %s", path)
 	return e.runInVenv("python setup.py install", path)
 }
 
 func (e *SetupPyExecutor) Clean() error {
+	log.Infof("Cleaning %s", venv)
 	return runCommand("rm", "-r", venv)
 }
 
 func (e *SetupPyExecutor) Test(path string) error {
-	log.Printf("Testing %s", path)
+	log.Infof("Testing %s", path)
 	return e.runInVenv("python setup.py test", path)
 }
 
 func (e *SetupPyExecutor) Exec(command string, path string) error {
-	log.Printf("Executing command %s in %s", command, path)
+	log.Infof("Executing command %s in %s", command, path)
 	return e.runInVenv(command, path)
 }
 

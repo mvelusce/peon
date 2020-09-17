@@ -19,7 +19,7 @@ type modulesRoot struct {
 	Modules []Module
 }
 
-const modulesYaml = "peon-modules.yml" // TODO move this in project and allow a custom file name
+const modulesYaml = "peon-modules.yml"
 const modulesJson = "peon-modules.json"
 
 func loadModules(root string) ([]Module, error) {
@@ -29,6 +29,7 @@ func loadModules(root string) ([]Module, error) {
 	modules, err := loadYamlModules(root)
 
 	if err != nil || len(modules) == 0 {
+		log.Infof("Unable to read yaml modules. Falling back to json.")
 		modules, err = loadJsonModules(root)
 	}
 
@@ -41,12 +42,12 @@ func loadYamlModules(root string) ([]Module, error) {
 	var c []Module
 	modules, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", r, modulesYaml))
 	if err != nil {
-		log.Infof("Failed to read yaml modules. Error: %v", err)
+		log.Debugf("Failed to read yaml modules. Error: %v", err)
 		return nil, err
 	}
 	err = yaml.Unmarshal(modules, &c)
 	if err != nil {
-		log.Infof("Failed to unmarshal yaml modules. Erroro: %v", err)
+		log.Debugf("Failed to unmarshal yaml modules. Error: %v", err)
 		return nil, err
 	}
 	return appendRoot(r, c), nil
