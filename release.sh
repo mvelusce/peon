@@ -14,10 +14,10 @@ fi
 
 echo "Using scope $SCOPE"
 
-echo "asd $(git tag)"
-echo "qwe $(git describe)"
-
-last_version=$(git describe --match "v[0-9]*" --tags | egrep -o '[0-9]+\.[0-9]+\.[0-9]+')
+last_version=$(git -c 'versionsort.suffix=-' \
+    ls-remote --exit-code --refs --sort='version:refname' --tags origin '*.*.*' \
+    | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
+    | tail -1)
 echo "Last version: $last_version"
 
 if [ -z "$last_version" ]; then
