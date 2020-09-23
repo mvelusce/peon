@@ -19,12 +19,14 @@ echo "Last version: $last_version"
 
 echo "Getting next version, without tagging"
 chmod u+x ./tools/shell-semver/increment_version.sh
-next_version=$(./tools/shell-semver/increment_version.sh -p $last_version)
+increment_version=./tools/shell-semver/increment_version.sh
+
+next_version=$($increment_version -p $last_version)
 if [ "$SCOPE" = "major" ]; then
-    next_version=$(./tools/shell-semver/increment_version.sh -M $last_version)
+    next_version=$($increment_version -M $last_version)
 fi
 if [ "$SCOPE" = "minor" ]; then
-    next_version=$(./tools/shell-semver/increment_version.sh -m $last_version)
+    next_version=$($increment_version -m $last_version)
 fi
 
 echo "Publishing with version: $next_version"
