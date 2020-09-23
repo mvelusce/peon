@@ -33,41 +33,35 @@ jobs:
     - name: Test
       run: go test -v ./internal/project
 
-    - name: Build
+    - name: Release
       run: |
-        cd cmd/peon/
-        go build
+        sh release.sh
 
-    - name: Semantic Release
-      uses: cycjimmy/semantic-release-action@v2
-      with:
-        branch: master
-        dry_run: true
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body_path: release-notes.md
+        draft: false
+        prerelease: false
 
-#    - name: Create Release
-#      id: create_release
-#      uses: actions/create-release@v1
-#      env:
-#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-#      with:
-#        tag_name: ${{ github.ref }}
-#        release_name: Release ${{ github.ref }}
-#        body: |
-#          Changes in this Release
-#          - First Change
-#          - Second Change
-#        draft: false
-#        prerelease: false
+    - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: cmd/peon/peon.zip
+          asset_name: peon.zip
+          asset_content_type: application/zip
 
-#    - name: Upload binaries to release
-#      uses: svenstaro/upload-release-action@v2
-#      with:
-#        repo_token: ${{ secrets.GITHUB_TOKEN }}
-#        file: target/release/mything
-#        asset_name: mything
-#        tag: ${{ github.ref }}
-#        overwrite: true
-#        body: "This is my release text"
+    - name: Cleanup
+      run: |
+        rm -f cmd/peon/peon-*
+        rm -f cmd/peon/peon.zip
+        rm -f release-notes.md
