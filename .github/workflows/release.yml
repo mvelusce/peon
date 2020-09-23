@@ -2,14 +2,12 @@ name: Go
 
 on:
   push:
-    branches: [ master, release-test ]
-  pull_request:
     branches: [ master ]
 
 jobs:
 
-  build:
-    name: Build
+  release:
+    name: Release
     runs-on: ubuntu-latest
     steps:
 
