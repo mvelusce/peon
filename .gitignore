@@ -30,3 +30,5 @@ Pipfile.lock
 *.pyc
 
 peonvenv
+
+.DS_Store
