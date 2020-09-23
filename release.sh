@@ -18,18 +18,19 @@ last_version=$(git describe --match "v[0-9]*" --tags | egrep -o '[0-9]+\.[0-9]+\
 echo "Last version: $last_version"
 
 echo "Getting next version, without tagging"
-next_version=$(sh ./tools/shell-semver/increment_version.sh -p $last_version)
+chmod u+x ./tools/shell-semver/increment_version.sh
+next_version=$(./tools/shell-semver/increment_version.sh -p $last_version)
 if [ "$SCOPE" = "major" ]; then
-    next_version=$(sh ./tools/shell-semver/increment_version.sh -M $last_version)
+    next_version=$(./tools/shell-semver/increment_version.sh -M $last_version)
 fi
 if [ "$SCOPE" = "minor" ]; then
-    next_version=$(sh ./tools/shell-semver/increment_version.sh -m $last_version)
+    next_version=$(./tools/shell-semver/increment_version.sh -m $last_version)
 fi
 
 echo "Publishing with version: $next_version"
 
 if [ -z "$next_version" ]; then
-    echo "Empty next version"
+    echo "ERROR: Empty next version"
     exit 1
 fi
 
