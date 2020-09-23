@@ -14,10 +14,8 @@ fi
 
 echo "Using scope $SCOPE"
 
-echo $(git tag)
-git pull origin --tags
-echo $(git tag)
-echo $(git describe)
+echo "asd $(git tag)"
+echo "qwe $(git describe)"
 
 last_version=$(git describe --match "v[0-9]*" --tags | egrep -o '[0-9]+\.[0-9]+\.[0-9]+')
 echo "Last version: $last_version"
