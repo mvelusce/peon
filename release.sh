@@ -28,6 +28,11 @@ fi
 
 echo "Publishing with version: $next_version"
 
+if [ -z "$next_version" ]; then
+    echo "Empty next version"
+    exit 1
+fi
+
 echo "Creating new tag"
 git tag "v$next_version"
 echo "Pushing tag to origin"
