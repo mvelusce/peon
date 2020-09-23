@@ -4,7 +4,7 @@ SCOPE="$1"
 
 if [ -z "$SCOPE" ]; then
     echo "Scope is empty. Trying to get from commit message..."
-    SCOPE=$(git log -1 | egrep -ohi '(MAJOR|MINOR|PATCH):' | head -1 | tr '[:upper:]' '[:lower:]')
+    SCOPE=$(git log -1 | egrep -ohi '(MAJOR|MINOR|PATCH)' | head -1 | tr '[:upper:]' '[:lower:]')
 fi
 
 if [ -z "$SCOPE" ]; then
@@ -14,8 +14,18 @@ fi
 
 echo "Using scope $SCOPE"
 
+echo $(git tag)
+git pull origin --tags
+echo $(git tag)
+echo $(git describe)
+
 last_version=$(git describe --match "v[0-9]*" --tags | egrep -o '[0-9]+\.[0-9]+\.[0-9]+')
 echo "Last version: $last_version"
+
+if [ -z "$last_version" ]; then
+    echo "ERROR: Empty last version"
+    exit 1
+fi
 
 echo "Getting next version, without tagging"
 chmod u+x ./tools/shell-semver/increment_version.sh
