@@ -19,7 +19,7 @@ version=$1
 
 # Build array from version string.
 
-a=( ${version//./ } )
+a=(${version//./ })
 
 # If version string is missing or has the wrong number of members, show usage message.
 
