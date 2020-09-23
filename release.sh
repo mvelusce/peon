@@ -2,27 +2,38 @@
 
 SCOPE="$1"
 
-# Get last commit and parse text
 if [ -z "$SCOPE" ]; then
     echo "Scope is empty. Trying to get from commit message..."
     SCOPE=$(git log -1 | egrep -ohi '(MAJOR|MINOR|PATCH):' | head -1 | tr '[:upper:]' '[:lower:]')
 fi
 
 if [ -z "$SCOPE" ]; then
-  echo "Scope is still empty. Setting it to auto..."
-  SCOPE="auto"
+  echo "Scope is still empty. Setting it to patch..."
+  SCOPE="patch"
 fi
 
 echo "Using scope $SCOPE"
 
+last_version=$(git describe --match "v[0-9]*" --tags | egrep -o '[0-9]+\.[0-9]+\.[0-9]+')
+echo "Last version: $last_version"
+
 echo "Getting next version, without tagging"
-nextversion="$(sh semtag final -fos $SCOPE)"
-echo "Publishing with version: $nextversion"
+next_version="$(./tools/shell-semver/increment_version.sh -p $last_version)"
+if [ "$SCOPE" = "major" ]; then
+    next_version=-Prelease.releaseVersion=$(./tools/shell-semver/increment_version.sh -M $last_version)
+fi
+if [ "$SCOPE" = "minor" ]; then
+    next_version=-Prelease.releaseVersion=$(./tools/shell-semver/increment_version.sh -m $last_version)
+fi
 
-echo "Update the tag with the new version"
-sh semtag final -f -v $nextversion
+echo "Publishing with version: $next_version"
 
-export PROG_VERSION=$nextversion
+echo "Creating new tag"
+git tag "v$next_version"
+echo "Pushing tag to origin"
+git push origin --tags
+
+export PROG_VERSION=$next_version
 
 echo "Building"
 sh build.sh
