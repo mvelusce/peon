@@ -11,7 +11,7 @@ func main() {
 
 	app := cli.NewApp()
 	app.Name = "peon"
-	app.Version = "$PROG_VERSION"
+	app.Version = "0.2.6"
 	app.Usage = "Something needs doing?"
 	app.Flags = []cli.Flag{
 		&cli.BoolFlag{Name: "dry-run", Aliases: []string{"d"}, Usage: ""},
