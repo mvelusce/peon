@@ -2,6 +2,7 @@
 
 cd cmd/peon
 
+cp main.go main.go.bak
 envsubst < main.go > main_with_version.go
 mv main_with_version.go main.go
 
@@ -16,3 +17,5 @@ env GOOS=windows go build -v -o peon-windows
 
 echo "Zipping artifacts..."
 zip peon.zip peon-linux peon-osx peon-windows
+
+mv main.go.bak main.go
