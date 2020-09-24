@@ -32,3 +32,9 @@ Pipfile.lock
 peonvenv
 
 .DS_Store
+
+.peon-config.json
+peon.zip
+peon-linux
+peon-osx
+peon-windows
