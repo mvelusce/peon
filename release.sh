@@ -44,11 +44,6 @@ if [ -z "$next_version" ]; then
     exit 1
 fi
 
-echo "Creating new tag"
-git tag "v$next_version"
-echo "Pushing tag to origin"
-git push origin --tags
-
 export PROG_VERSION=$next_version
 
 echo "Building"
@@ -56,3 +51,15 @@ sh build.sh
 
 echo "Create release notes"
 git log -1 | tail -n +5 > release-notes.md
+
+echo "Release commit"
+git add cmd/peon/main.go release-notes.md
+git commit -m "Release: v$next_version"
+
+echo "Pushing commit to origin"
+git push origin master
+
+echo "Creating new tag"
+git tag "v$next_version"
+echo "Pushing tag to origin"
+git push origin --tags
