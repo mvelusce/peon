@@ -2,6 +2,9 @@
 
 cd cmd/peon
 
+envsubst < main.go > main_with_version.go
+mv main_with_version.go main.go
+
 echo "Building for Linux..."
 env GOOS=linux GOARCH=arm go build -v -o peon-linux
 
