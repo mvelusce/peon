@@ -47,19 +47,22 @@ fi
 export PROG_VERSION=$next_version
 
 echo "Building"
-sh build.sh
+sh build.sh || { echo 'build failed' ; exit 1; }
 
 echo "Create release notes"
 git log -1 | tail -n +5 > release-notes.md
 
 echo "Release commit"
+git config --global user.email "marco.veluscek@skytv.it"
+git config --global user.name "Marco Veluscek"
+
 git add cmd/peon/main.go release-notes.md
-git commit -m "Release: v$next_version"
+git commit -m "Release: v$next_version" || { echo 'release commit failed' ; exit 1; }
 
 echo "Pushing commit to origin"
-git push origin master
+git push origin master || { echo 'push failed' ; exit 1; }
 
 echo "Creating new tag"
 git tag "v$next_version"
 echo "Pushing tag to origin"
-git push origin --tags
+git push origin --tags || { echo 'tag push failed' ; exit 1; }
