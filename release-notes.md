@@ -1,5 +1,5 @@
-# Release v0.2.13
+# Release v0.2.14
 
 ## Changes:
 
-1b92564 Merge branch 'master' of https://github.com/skyveluscekm/peon
+f88d61e Update linux arch
