@@ -7,7 +7,7 @@ envsubst < main.go > main_with_version.go
 mv main_with_version.go main.go
 
 echo "Building for Linux..."
-env GOOS=linux GOARCH=arm go build -v -o peon-linux
+env GOOS=linux GOARCH=x86-64 go build -v -o peon-linux
 
 echo "Building for OSX..."
 env GOOS=darwin GOARCH=386 go build -v -o peon-osx
