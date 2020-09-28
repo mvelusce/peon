@@ -1,5 +1,5 @@
-# Release v0.2.16
+# Release v0.2.17
 
 ## Changes:
 
-acab320 Fix get_current_version script
+e2e0d37 Merge branch 'master' of https://github.com/skyveluscekm/peon
