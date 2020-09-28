@@ -1,5 +1,5 @@
-# Release v0.2.15
+# Release v0.2.16
 
 ## Changes:
 
-05f89f0 Fix linux arch (#3)
+acab320 Fix get_current_version script
