@@ -10,7 +10,7 @@ echo "Building for Linux..."
 env GOOS=linux GOARCH=386 go build -i -v -o ../../bin/peon-linux
 
 echo "Building for OSX..."
-env GOOS=darwin GOARCH=386 go build -i -v -o ../../bin/peon-osx
+env GOOS=darwin GOARCH=amd64 go build -i -v -o ../../bin/peon-osx
 
 echo "Building for Windows..."
 env GOOS=windows GOARCH=386 go build -i -v -o ../../bin/peon-windows
