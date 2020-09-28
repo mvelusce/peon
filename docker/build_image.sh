@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./get_current_version.sh
+current_version=$(./get_current_version.sh)
 
 docker build -t peon -f ../Dockerfile ../
 
