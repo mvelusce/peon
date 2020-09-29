@@ -1,5 +1,5 @@
-# Release v0.2.22
+# Release v1.0.0
 
 ## Changes:
 
-d7c37c7 Rename Github workflows
+f2663b9 MAJOR: Add python in Docker container
