@@ -1,5 +1,5 @@
-# Release v0.2.17
+# Release v0.2.18
 
 ## Changes:
 
-e2e0d37 Merge branch 'master' of https://github.com/skyveluscekm/peon
+f16d061 Fix build for OSX
