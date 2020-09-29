@@ -1,5 +1,5 @@
-# Release v0.2.20
+# Release v0.2.21
 
 ## Changes:
 
-a26a091 Add Docker build and push step to release
+777565a Add Docker build and push step to release
