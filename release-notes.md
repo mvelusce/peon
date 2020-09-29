@@ -1,5 +1,5 @@
-# Release v0.2.18
+# Release v0.2.19
 
 ## Changes:
 
-f16d061 Fix build for OSX
+f7fc50c Add Docker build and push step to release
