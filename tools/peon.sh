@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+./get_latest_release.sh
+
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         ./peon-linux "$@"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
