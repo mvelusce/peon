@@ -1,5 +1,5 @@
-# Release v0.2.21
+# Release v0.2.22
 
 ## Changes:
 
-777565a Add Docker build and push step to release
+d7c37c7 Rename Github workflows
