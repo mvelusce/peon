@@ -82,4 +82,4 @@ jobs:
 
     - name: Docker build and push
       run: |
-        ./docker/build_image_docker_hub.sh
+        cd ./docker && ./build_image_docker_hub.sh
