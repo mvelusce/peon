@@ -2,9 +2,13 @@ FROM golang:1.15 AS builder
 
 WORKDIR /opt/peon/app
 
+COPY go.mod .
+COPY go.sum .
+
+RUN go mod download
+
 COPY . .
 
-RUN go get -d ./...
 RUN cd cmd/peon && go build -o ../../bin/peon
 
 FROM python:3.7
