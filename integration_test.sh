@@ -5,3 +5,4 @@ rm peon
 go build
 
 ./peon test
+rm peon
