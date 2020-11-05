@@ -7,7 +7,7 @@ import (
 
 func TestLoadDependenciesGraph(t *testing.T) {
 
-	var modules = []Module{
+	var modules = []*Module{
 		{"mod3", "mod3", []string{"mod2"}},
 		{"mod5", "mod5", []string{"mod3"}},
 		{"mod0", "mod0", []string{}},

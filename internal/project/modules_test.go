@@ -15,14 +15,14 @@ func TestLoadModules(t *testing.T) {
 	assert.Equal(t, 4, len(res))
 
 	modA := res[0]
-	expectedA := Module{
+	expectedA := &Module{
 		Name: "module_a",
 		Path: "../../test/data/project/module_a",
 	}
 	assert.True(t, reflect.DeepEqual(modA, expectedA), "expected %s, got %v", expectedA, modA)
 
 	modB := res[1]
-	expectedB := Module{
+	expectedB := &Module{
 		Name:         "module_b",
 		Path:         "../../test/data/project/module_b",
 		Dependencies: []string{"module_a"},

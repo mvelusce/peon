@@ -7,7 +7,7 @@ import (
 
 func TestParsingSetupPy(t *testing.T) {
 
-	modules := []Module{
+	modules := []*Module{
 		{Name: "module_a"},
 		{Name: "module_b"},
 	}
@@ -26,7 +26,7 @@ func TestParsingSetupPy(t *testing.T) {
 
 func TestParsingSetupPyFiles(t *testing.T) {
 
-	modules := []Module{
+	modules := []*Module{
 		{Name: "module_a", Path: "../../test/data/project/module_a"},
 		{Name: "module_b", Path: "../../test/data/project/module_b"},
 	}
@@ -38,7 +38,7 @@ func TestParsingSetupPyFiles(t *testing.T) {
 	}
 
 	modA := res[0]
-	expectedA := Module{
+	expectedA := &Module{
 		Name: "module_a",
 		Path: "../../test/data/project/module_a",
 	}
@@ -47,7 +47,7 @@ func TestParsingSetupPyFiles(t *testing.T) {
 	}
 
 	modB := res[1]
-	expectedB := Module{
+	expectedB := &Module{
 		Name:         "module_b",
 		Path:         "../../test/data/project/module_b",
 		Dependencies: []string{"module_a"},

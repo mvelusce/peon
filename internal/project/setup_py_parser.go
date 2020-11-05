@@ -11,9 +11,9 @@ import (
 
 const setupPy = "setup.py"
 
-func parseSetupPyFiles(modules []Module) []Module {
+func parseSetupPyFiles(modules []*Module) []*Module {
 
-	var modulesWithDeps []Module
+	var modulesWithDeps []*Module
 	for _, m := range modules {
 		pyMod, err := parseSetupPyFile(m.Path, modules)
 		if err == nil {
@@ -25,13 +25,13 @@ func parseSetupPyFiles(modules []Module) []Module {
 	return modulesWithDeps
 }
 
-func parseSetupPyFile(path string, modules []Module) (Module, error) {
+func parseSetupPyFile(path string, modules []*Module) (*Module, error) {
 
 	p := TrimSuffix(path, "/")
 	file, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", p, setupPy))
 	if err != nil {
 		log.Errorf("Failed to read setup.py file in %s. Error: %v", p, err)
-		return Module{}, err
+		return &Module{}, err
 	}
 	content := string(file)
 
@@ -45,10 +45,10 @@ func parseSetupPyFile(path string, modules []Module) (Module, error) {
 			return m, nil
 		}
 	}
-	return Module{}, errors.New("Py module not found in " + p)
+	return &Module{}, errors.New("Py module not found in " + p)
 }
 
-func parseDependencies(modules []Module, content string, nameToExclude string) []string {
+func parseDependencies(modules []*Module, content string, nameToExclude string) []string {
 
 	c := strings.Replace(content, "\n", "", -1)
 	c = strings.Replace(c, nameToExclude, "", -1)

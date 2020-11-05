@@ -16,15 +16,15 @@ type Module struct {
 }
 
 type modulesRoot struct {
-	Modules []Module
+	Modules []*Module
 }
 
 const modulesYaml = "peon-modules.yml"
 const modulesJson = "peon-modules.json"
 
-func loadModules(root string) ([]Module, error) {
+func loadModules(root string) ([]*Module, error) {
 
-	var modules []Module
+	var modules []*Module
 
 	modules, err := loadYamlModules(root)
 
@@ -36,10 +36,10 @@ func loadModules(root string) ([]Module, error) {
 	return parseSetupPyFiles(modules), err
 }
 
-func loadYamlModules(root string) ([]Module, error) {
+func loadYamlModules(root string) ([]*Module, error) {
 
 	r := TrimSuffix(root, "/")
-	var c []Module
+	var c []*Module
 	modules, err := ioutil.ReadFile(fmt.Sprintf("%s/%s", r, modulesYaml))
 	if err != nil {
 		log.Debugf("Failed to read yaml modules. Error: %v", err)
@@ -53,7 +53,7 @@ func loadYamlModules(root string) ([]Module, error) {
 	return appendRoot(r, c), nil
 }
 
-func loadJsonModules(root string) ([]Module, error) {
+func loadJsonModules(root string) ([]*Module, error) {
 
 	r := TrimSuffix(root, "/")
 	file, err := os.Open(fmt.Sprintf("%s/%s", r, modulesJson))
@@ -71,10 +71,10 @@ func loadJsonModules(root string) ([]Module, error) {
 	return appendRoot(r, rootModules.Modules), nil
 }
 
-func appendRoot(root string, modules []Module) []Module {
+func appendRoot(root string, modules []*Module) []*Module {
 	r := TrimSuffix(root, "/")
 
-	var mods []Module
+	var mods []*Module
 	for _, m := range modules {
 		path := TrimPrefix(TrimPrefix(m.Path, "."), "/")
 		p := fmt.Sprintf("%s/%s", r, path)

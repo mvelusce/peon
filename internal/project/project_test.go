@@ -7,7 +7,7 @@ import (
 
 func TestBuildProject(t *testing.T) {
 
-	var modules = []Module{
+	var modules = []*Module{
 		{"mod3", "mod3", []string{"mod2"}},
 		{"mod5", "mod5", []string{"mod3"}},
 		{"mod0", "mod0", []string{}},
@@ -35,7 +35,7 @@ func TestBuildProject(t *testing.T) {
 
 func TestBuildModule(t *testing.T) {
 
-	var modules = []Module{
+	var modules = []*Module{
 		{"mod0", "mod0", []string{}},
 		{"mod1", "mod1", []string{"mod0"}},
 		{"mod2", "mod2", []string{"mod1", "mod0"}},
@@ -58,7 +58,7 @@ func TestBuildModule(t *testing.T) {
 
 func TestBuildModule1(t *testing.T) {
 
-	var modules = []Module{
+	var modules = []*Module{
 		{"mod0", "mod0", []string{}},
 		{"mod1", "mod1", []string{"mod0"}},
 		{"mod2", "mod2", []string{"mod1", "mod0"}},
@@ -82,7 +82,7 @@ func TestBuildModule1(t *testing.T) {
 
 func TestClean(t *testing.T) {
 
-	var modules []Module
+	var modules []*Module
 
 	g, _ := loadDependenciesGraph(modules)
 
@@ -98,7 +98,7 @@ func TestClean(t *testing.T) {
 
 func TestTestProject(t *testing.T) {
 
-	var modules = []Module{
+	var modules = []*Module{
 		{"mod3", "mod3", []string{"mod2"}},
 		{"mod5", "mod5", []string{"mod3"}},
 		{"mod0", "mod0", []string{}},
@@ -124,7 +124,7 @@ func TestTestProject(t *testing.T) {
 
 func TestExecProject(t *testing.T) {
 
-	var modules = []Module{
+	var modules = []*Module{
 		{"mod3", "mod3", []string{"mod2"}},
 		{"mod5", "mod5", []string{"mod3"}},
 		{"mod0", "mod0", []string{}},

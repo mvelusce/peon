@@ -7,7 +7,7 @@ import (
 )
 
 type DependenciesGraph struct {
-	modules     []Module
+	modules     []*Module
 	graph       *graph.Mutable
 	moduleIndex map[string]int
 }
@@ -25,7 +25,7 @@ func loadModulesAndGraph(projectRoot string) (*DependenciesGraph, error) {
 	return dg, nil
 }
 
-func loadDependenciesGraph(modules []Module) (*DependenciesGraph, error) {
+func loadDependenciesGraph(modules []*Module) (*DependenciesGraph, error) {
 	g := graph.New(len(modules))
 	indexes := make(map[string]int)
 	for i, m := range modules {

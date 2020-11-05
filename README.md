@@ -69,5 +69,5 @@ go build
 
 Run all tests
 ```bash
-go test ./...
+go test -race ./...
 ```
