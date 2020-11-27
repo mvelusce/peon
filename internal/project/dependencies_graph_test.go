@@ -22,4 +22,10 @@ func TestLoadDependenciesGraph(t *testing.T) {
 	assert.Equal(t, map[string]int{
 		"mod0": 2, "mod1": 3, "mod2": 5, "mod3": 0, "mod4": 4, "mod5": 1,
 	}, res.moduleIndex)
+	assert.Equal(t, map[string][]*Module{
+		"mod0": {modules[3], modules[5]},
+		"mod1": {modules[4], modules[5]},
+		"mod2": {modules[0], modules[4]},
+		"mod3": {modules[1]},
+	}, res.inverseDeps)
 }

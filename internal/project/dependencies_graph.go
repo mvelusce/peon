@@ -1,7 +1,9 @@
 package project
 
 import (
+	"container/heap"
 	"errors"
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/yourbasic/graph"
 )
@@ -10,6 +12,7 @@ type DependenciesGraph struct {
 	modules     []*Module
 	graph       *graph.Mutable
 	moduleIndex map[string]int
+	inverseDeps map[string][]*Module
 }
 
 func loadModulesAndGraph(projectRoot string) (*DependenciesGraph, error) {
@@ -28,12 +31,21 @@ func loadModulesAndGraph(projectRoot string) (*DependenciesGraph, error) {
 func loadDependenciesGraph(modules []*Module) (*DependenciesGraph, error) {
 	g := graph.New(len(modules))
 	indexes := make(map[string]int)
+	inverseDeps := make(map[string][]*Module)
 	for i, m := range modules {
 		indexes[m.Name] = i
 	}
 	for i, m := range modules {
 		for _, d := range m.Dependencies {
 			g.Add(i, indexes[d])
+
+			if val, ok := inverseDeps[d]; ok {
+				inverseDepsForM := append(val, m)
+				inverseDeps[d] = inverseDepsForM
+			} else {
+				inverseDepsForM := []*Module{m}
+				inverseDeps[d] = inverseDepsForM
+			}
 		}
 	}
 	if !graph.Acyclic(g) {
@@ -44,28 +56,30 @@ func loadDependenciesGraph(modules []*Module) (*DependenciesGraph, error) {
 		modules:     modules,
 		graph:       g,
 		moduleIndex: indexes,
+		inverseDeps: inverseDeps,
 	}
 	return depGraph, nil
 }
 
 func (dp *DependenciesGraph) executeOnAll(action func(string) error) error {
-	order, ac := graph.TopSort(dp.graph)
-	if !ac {
-		log.Errorf("ERROR Circular dependency detected")
-		return errors.New("ERROR Circular dependency detected")
-	}
 
-	for v := 0; v < len(order); v++ {
-		i := len(order) - v - 1
+	pq := Init(dp.modules)
 
-		m := dp.modules[order[i]]
-		err := action(m.Path)
+	for pq.Len() > 0 {
+		mod := heap.Pop(pq).(*ModulePriority)
+		fmt.Printf("priority %.2d:%s ", mod.priority, mod.module)
+
+		err := action(mod.module.Path)
 
 		if err != nil {
-			log.Errorf("Unable to build module %s. Error: %v", m.Path, err)
+			log.Errorf("Unable to build module %s. Error: %v", mod.module.Path, err)
 			return err
 		}
-		log.Printf("Install module %s successful", dp.modules[v].Name)
+		log.Printf("Install module %s successful", mod.module.Name)
+
+		for _, d := range dp.inverseDeps[mod.module.Name] {
+			pq.Decrease(d.Name)
+		}
 	}
 	return nil
 }
