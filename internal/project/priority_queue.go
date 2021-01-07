@@ -2,8 +2,11 @@ package project
 
 import (
 	"container/heap"
+
+	log "github.com/sirupsen/logrus"
 )
 
+// A ModulePriority holds details of the module and its priority
 type ModulePriority struct {
 	module   *Module
 	priority int
@@ -11,12 +14,13 @@ type ModulePriority struct {
 	index int // The index of the item in the heap.
 }
 
-// A PriorityQueue implements heap.Interface and holds Items.
+// A PriorityQueue implements heap.Interface and holds modulePriority.
 type PriorityQueue struct {
-	priorities    []*ModulePriority
-	moduleIndexes map[string]int
+	priorities       []*ModulePriority
+	prioritiesByName map[string]*ModulePriority
 }
 
+// Init inistialize the priority Queue
 func Init(modules []*Module) *PriorityQueue {
 
 	modDeps := map[string]int{}
@@ -28,20 +32,21 @@ func Init(modules []*Module) *PriorityQueue {
 	}
 
 	priorities := make([]*ModulePriority, len(modDeps))
-	moduleIndexes := map[string]int{}
+	prioritiesByName := map[string]*ModulePriority{}
 	i := 0
 	for key, priority := range modDeps {
-		priorities[i] = &ModulePriority{
+		modPriority := &ModulePriority{
 			module:   mods[key],
 			priority: priority,
 			index:    i,
 		}
-		moduleIndexes[key] = i
+		priorities[i] = modPriority
+		prioritiesByName[key] = modPriority
 		i++
 	}
 	pq := &PriorityQueue{
-		priorities:    priorities,
-		moduleIndexes: moduleIndexes,
+		priorities:       priorities,
+		prioritiesByName: prioritiesByName,
 	}
 	heap.Init(pq)
 	return pq
@@ -59,6 +64,7 @@ func (pq PriorityQueue) Swap(i, j int) {
 	pq.priorities[j].index = j
 }
 
+// Push push object to priority queue
 func (pq *PriorityQueue) Push(x interface{}) {
 	n := len(pq.priorities)
 	item := x.(*ModulePriority)
@@ -66,6 +72,7 @@ func (pq *PriorityQueue) Push(x interface{}) {
 	pq.priorities = append(pq.priorities, item)
 }
 
+// Pop pop object to priority queue
 func (pq *PriorityQueue) Pop() interface{} {
 	old := pq.priorities
 	n := len(old)
@@ -76,17 +83,19 @@ func (pq *PriorityQueue) Pop() interface{} {
 	return item
 }
 
+// Update update the priority of the object matching the key
 func (pq *PriorityQueue) Update(key string, priority int) {
-	moduleIndex := pq.moduleIndexes[key]
-	modulePriority := pq.priorities[moduleIndex]
+	modulePriority := pq.prioritiesByName[key]
+	log.Debugf("Updating module: %s. Priority: %d", modulePriority.module.Name, key)
 	pq.update(modulePriority, modulePriority.module, priority)
 }
 
+// Decrease decrease the priority of the object matching the key by one
 func (pq *PriorityQueue) Decrease(key string) {
-	moduleIndex := pq.moduleIndexes[key]
-	modulePriority := pq.priorities[moduleIndex]
+	modulePriority := pq.prioritiesByName[key]
 	priority := modulePriority.priority - 1
 	println(priority)
+	log.Debugf("Decreasing module priority: %v", modulePriority.module.Name)
 	pq.Update(key, priority)
 }
 

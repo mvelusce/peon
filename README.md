@@ -71,3 +71,8 @@ Run all tests
 ```bash
 go test -race ./...
 ```
+
+Run single test
+```bash
+go test -run TestPriorityQueue
+```
