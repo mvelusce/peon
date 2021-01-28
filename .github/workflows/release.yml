@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    branches: [ release ]
+    branches: [ main ]
 
 jobs:
 
@@ -47,7 +47,8 @@ jobs:
       with:
         tag_name: ${{ steps.previous_tag.outputs.tag }}
         release_name: Release ${{ steps.previous_tag.outputs.tag }}
-        body_path: release-notes.md
+        body: |
+            ${{ steps.Changelog.outputs.changelog }}
         draft: false
         prerelease: false
 
