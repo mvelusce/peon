@@ -46,7 +46,7 @@ fi
 
 export PROG_VERSION=$next_version
 
-git checkout -b release
+git checkout release
 
 echo "Building"
 sh build.sh || { echo 'build failed' ; exit 1; }
