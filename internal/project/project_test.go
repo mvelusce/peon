@@ -7,7 +7,7 @@ import (
 
 func TestBuildProject(t *testing.T) {
 
-	var modules = []Module{
+	var modules = []*Module{
 		{"mod3", "mod3", []string{"mod2"}},
 		{"mod5", "mod5", []string{"mod3"}},
 		{"mod0", "mod0", []string{}},
@@ -20,7 +20,7 @@ func TestBuildProject(t *testing.T) {
 
 	var buildModules []string
 	e := &MockExecutor{executedActions: buildModules}
-	project := Project{modules, g, e}
+	project := Project{g, e}
 
 	_ = project.Build()
 
@@ -35,7 +35,7 @@ func TestBuildProject(t *testing.T) {
 
 func TestBuildModule(t *testing.T) {
 
-	var modules = []Module{
+	var modules = []*Module{
 		{"mod0", "mod0", []string{}},
 		{"mod1", "mod1", []string{"mod0"}},
 		{"mod2", "mod2", []string{"mod1", "mod0"}},
@@ -46,7 +46,7 @@ func TestBuildModule(t *testing.T) {
 
 	var buildModules []string
 	e := &MockExecutor{executedActions: buildModules}
-	project := Project{modules, g, e}
+	project := Project{g, e}
 
 	_ = project.BuildModule("mod2")
 
@@ -58,7 +58,7 @@ func TestBuildModule(t *testing.T) {
 
 func TestBuildModule1(t *testing.T) {
 
-	var modules = []Module{
+	var modules = []*Module{
 		{"mod0", "mod0", []string{}},
 		{"mod1", "mod1", []string{"mod0"}},
 		{"mod2", "mod2", []string{"mod1", "mod0"}},
@@ -69,7 +69,7 @@ func TestBuildModule1(t *testing.T) {
 
 	var buildModules []string
 	e := &MockExecutor{executedActions: buildModules}
-	project := Project{modules, g, e}
+	project := Project{g, e}
 
 	_ = project.BuildModule("mod4")
 
@@ -80,28 +80,15 @@ func TestBuildModule1(t *testing.T) {
 	assert.Equal(t, "mod4", e.executedActions[3])
 }
 
-func TestLoadDependenciesGraph(t *testing.T) {
-
-	var modules = []Module{
-		{"mod0", "mod0", []string{}},
-		{"mod1", "mod1", []string{"mod0"}},
-		{"mod2", "mod2", []string{"mod1", "mod0"}},
-	}
-
-	res, _ := loadDependenciesGraph(modules)
-
-	assert.Equal(t, "3 [(1 0) (2 0) (2 1)]", res.String())
-}
-
 func TestClean(t *testing.T) {
 
-	var modules []Module
+	var modules []*Module
 
 	g, _ := loadDependenciesGraph(modules)
 
 	var buildModules []string
 	e := &MockExecutor{executedActions: buildModules}
-	project := Project{modules, g, e}
+	project := Project{g, e}
 
 	_ = project.Clean()
 
@@ -111,7 +98,7 @@ func TestClean(t *testing.T) {
 
 func TestTestProject(t *testing.T) {
 
-	var modules = []Module{
+	var modules = []*Module{
 		{"mod3", "mod3", []string{"mod2"}},
 		{"mod5", "mod5", []string{"mod3"}},
 		{"mod0", "mod0", []string{}},
@@ -124,7 +111,7 @@ func TestTestProject(t *testing.T) {
 
 	var buildModules []string
 	e := &MockExecutor{executedActions: buildModules}
-	project := Project{modules, g, e}
+	project := Project{g, e}
 
 	_ = project.Test()
 
@@ -137,7 +124,7 @@ func TestTestProject(t *testing.T) {
 
 func TestExecProject(t *testing.T) {
 
-	var modules = []Module{
+	var modules = []*Module{
 		{"mod3", "mod3", []string{"mod2"}},
 		{"mod5", "mod5", []string{"mod3"}},
 		{"mod0", "mod0", []string{}},
@@ -150,7 +137,7 @@ func TestExecProject(t *testing.T) {
 
 	var buildModules []string
 	e := &MockExecutor{executedActions: buildModules}
-	project := Project{modules, g, e}
+	project := Project{g, e}
 
 	_ = project.Exec("custom command")
 
