@@ -46,24 +46,8 @@ fi
 
 export PROG_VERSION=$next_version
 
-git checkout release
-
 echo "Building"
 sh build.sh || { echo 'build failed' ; exit 1; }
-
-echo "Create release notes"
-echo "# Release v$next_version\n\n## Changes:\n" > release-notes.md
-git log -1 --pretty=oneline --abbrev-commit >> release-notes.md
-
-echo "Release commit"
-git config --global user.email "marcoveluscek@gmail.com"
-git config --global user.name "Marco Veluscek"
-
-git add cmd/peon/main.go release-notes.md
-git commit -m "Release: v$next_version" || { echo 'release commit failed' ; exit 1; }
-
-echo "Pushing commit to origin"
-git push origin release || { echo 'push failed' ; exit 1; }
 
 echo "Creating new tag"
 git tag "v$next_version"
