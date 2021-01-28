@@ -61,7 +61,7 @@ git add cmd/peon/main.go release-notes.md
 git commit -m "Release: v$next_version" || { echo 'release commit failed' ; exit 1; }
 
 echo "Pushing commit to origin"
-git push origin master || { echo 'push failed' ; exit 1; }
+git push origin main || { echo 'push failed' ; exit 1; }
 
 echo "Creating new tag"
 git tag "v$next_version"
