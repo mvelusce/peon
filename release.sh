@@ -54,7 +54,7 @@ echo "# Release v$next_version\n\n## Changes:\n" > release-notes.md
 git log -1 --pretty=oneline --abbrev-commit >> release-notes.md
 
 echo "Release commit"
-git config --global user.email "marco.veluscek@skytv.it"
+git config --global user.email "marcoveluscek@gmail.com"
 git config --global user.name "Marco Veluscek"
 
 git add cmd/peon/main.go release-notes.md

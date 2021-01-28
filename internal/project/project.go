@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/skyveluscekm/peon/internal/executor"
+	"github.com/mvelusce/peon/internal/executor"
 	"github.com/yourbasic/graph"
 )
 
