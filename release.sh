@@ -53,7 +53,7 @@ sh build.sh || { echo 'build failed' ; exit 1; }
 
 echo "Create release notes"
 echo "# Release v$next_version\n\n## Changes:\n" > release-notes.md
-git log -1 --pretty=oneline --abbrev-commit >> release-notes.md
+git log -1 --abbrev-commit >> release-notes.md
 
 echo "Release commit"
 git config --global user.email "marcoveluscek@gmail.com"
