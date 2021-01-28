@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-	"github.com/skyveluscekm/peon/internal/project"
+	"github.com/mvelusce/peon/internal/project"
 	"github.com/urfave/cli/v2"
 )
 

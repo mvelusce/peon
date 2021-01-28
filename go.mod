@@ -1,4 +1,4 @@
-module github.com/skyveluscekm/peon
+module github.com/mvelusce/peon
 
 go 1.15
 

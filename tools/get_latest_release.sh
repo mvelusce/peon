@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 TOKEN="$GITHUB_PAT"
-REPO="skyveluscekm/peon"
+REPO="mvelusce/peon"
 FILE="peon.zip"
 VERSION="latest"
 GITHUB="https://api.github.com"
@@ -13,7 +13,7 @@ if [ -f .peon-version ]; then
     current_peon_version=$(cat .peon-version)
 fi
 latest_peon_version=$(curl -s -H "Authorization: token $TOKEN" \
-    https://api.github.com/repos/skyveluscekm/peon/releases/latest |\
+    https://api.github.com/repos/mvelusce/peon/releases/latest |\
     grep tag_name | sed -E 's/.*(v[0-9]+\.[0-9]+\.[0-9]+).*/\1/g')
 
 if [ "$current_peon_version" = "$latest_peon_version" ]; then
