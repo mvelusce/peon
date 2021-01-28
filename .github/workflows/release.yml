@@ -42,6 +42,9 @@ jobs:
     - name: Changelog
       id: changelog
       uses: heinrichreimer/github-changelog-generator-action@v2.2
+      with:
+        onlyLastTag: true
+        simple-list: true
 
     - name: Create Github release
       id: create_release
