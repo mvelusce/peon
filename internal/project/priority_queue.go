@@ -10,8 +10,7 @@ import (
 type ModulePriority struct {
 	module   *Module
 	priority int
-	// The index is needed by update and is maintained by the heap.Interface methods.
-	index int // The index of the item in the heap.
+	index    int // The index of the item in the heap. The index is needed by update and is maintained by the heap.Interface methods.
 }
 
 // A PriorityQueue implements heap.Interface and holds modulePriority.
@@ -81,6 +80,11 @@ func (pq *PriorityQueue) Pop() interface{} {
 	item.index = -1 // for safety
 	pq.priorities = old[0 : n-1]
 	return item
+}
+
+// Head return elements with highest priority
+func (pq *PriorityQueue) Head() interface{} {
+	return pq.priorities[0]
 }
 
 // Update update the priority of the object matching the key

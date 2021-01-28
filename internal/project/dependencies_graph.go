@@ -3,7 +3,7 @@ package project
 import (
 	"container/heap"
 	"errors"
-	"fmt"
+	
 	log "github.com/sirupsen/logrus"
 	"github.com/yourbasic/graph"
 )
@@ -13,6 +13,11 @@ type DependenciesGraph struct {
 	graph       *graph.Mutable
 	moduleIndex map[string]int
 	inverseDeps map[string][]*Module
+}
+
+type modActionStatus struct {
+	module   *Module
+	succeded bool
 }
 
 func loadModulesAndGraph(projectRoot string) (*DependenciesGraph, error) {
@@ -65,22 +70,27 @@ func (dp *DependenciesGraph) executeOnAll(action func(string) error) error {
 
 	pq := Init(dp.modules)
 
+	c := make(chan *modActionStatus)// TODO use mutex and wait group instead
+
 	for pq.Len() > 0 {
-		mod := heap.Pop(pq).(*ModulePriority)
-		fmt.Printf("priority %.2d:%s ", mod.priority, mod.module)
-
-		err := action(mod.module.Path)
-
-		if err != nil {
-			log.Errorf("Unable to build module %s. Error: %v", mod.module.Path, err)
-			return err
+		
+		for pq.Head() == 0 {
+			mod := heap.Pop(pq).(*ModulePriority)// TODO use mutex to sync on changes
+			log.Debugf("Priority %.2d: %s ", mod.priority, mod.module.Name)
+			
+			go executeAction(mod, c, action)
 		}
-		log.Printf("Install module %s successful", mod.module.Name)
 
-		for _, d := range dp.inverseDeps[mod.module.Name] {
-			pq.Decrease(d.Name)
+		actionResult := <-c
+
+		if !actionResult.succeded {
+			return errors.New("Unable to execute action on module " + actionResult.module.Name)
+		}
+		for _, d := range dp.inverseDeps[actionResult.module.Name] {
+			pq.Decrease(d.Name)// TODO move to go routine after build done.
 		}
 	}
+	// TODO wait all spawned go routines
 	return nil
 }
 
@@ -125,4 +135,15 @@ func (dp *DependenciesGraph) visit(index int, visited []bool, action func(string
 	visited[index] = true
 	log.Printf("Install module %s successful", m.Name)
 	return nil
+}
+
+func executeAction(mod *ModulePriority, c chan *modActionStatus, action func(string) error) {
+	err := action(mod.module.Path)
+
+	if err != nil {
+		log.Errorf("Unable to execute action on module %s. Error: %v", mod.module.Path, err)
+		c <- &modActionStatus{module: mod.module, succeded: false}
+	}
+	//log.Printf("Execution on module %s successful", mod.module.Name)
+	c <- &modActionStatus{module: mod.module, succeded: true}
 }
