@@ -3,7 +3,6 @@ package project
 import (
 	log "github.com/sirupsen/logrus"
 	"github.com/mvelusce/peon/internal/executor"
-	"github.com/yourbasic/graph"
 )
 
 type Project struct {
