@@ -4,7 +4,7 @@ Work work...
 
 Peon is a simple script to manage multiple python applications and libraries in a monorepo. Peon uses Setuptools to build and test python applications, modules and libraries.
 
-If you have many python modules in several repositories with complex intra-dependencies, you can you Peon to move all your code to a monorepo and simplify your development process.
+If you have many python modules in several repositories with complex intra-dependencies, you can use Peon to move all your code to a monorepo and simplify your development process.
 
 ## Why
 
