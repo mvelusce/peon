@@ -49,7 +49,7 @@ See `test/data` for examples.
 
 ## Development
 
-The code in written in go 1.14.
+The code is written in go 1.15.
 
 Init Go module
 ```bash
